@@ -3,7 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 
-// node:sqlite (kèm hàm db.function) có sẵn từ Node.js 22.13
+// node:sqlite (kèm hàm db.function) có sẵn từ Node.js 22.13.
+// journal_mode = DELETE: mọi thay đổi ghi thẳng vào file .db để DB Browser / SQLite Viewer thấy ngay.
 const [major, minor] = process.versions.node.split('.').map(Number);
 if (major < 22 || (major === 22 && minor < 13)) {
   console.error(`\n[EngEdu] Node.js hiện tại là ${process.version}, cần 22.13 trở lên.`);
@@ -17,7 +18,7 @@ const config = require('./config');
 
 fs.mkdirSync(path.dirname(config.dbFile), { recursive: true });
 const raw = new DatabaseSync(config.dbFile);
-raw.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;');
+raw.exec('PRAGMA journal_mode = DELETE; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;');
 
 const pad = (n) => String(n).padStart(2, '0');
 
