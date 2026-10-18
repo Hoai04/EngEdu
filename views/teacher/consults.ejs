@@ -1,0 +1,24 @@
+<%- include('../partials/staff-start') %>
+<div class="stack">
+  <% items.forEach(y => { %>
+    <div class="card">
+      <div class="row between"><div><b><%= y.ho_ten %></b> <span class="small muted">· <%= y.sdt %> · <%= y.email || '' %></span></div><%- h.badge('tuVan', y.trang_thai) %></div>
+      <p class="small muted">Khóa quan tâm: <%= y.khoa_hoc_ten || 'Chưa chọn' %> · Gửi lúc <%= h.datetime(y.ngay_tao) %></p>
+      <% if (y.noi_dung) { %><p><%= y.noi_dung %></p><% } %>
+      <% if (y.trang_thai === 'CHUYEN_GV') { %>
+        <form method="post" action="/teacher/tu-van/<%= y.id %>/de-xuat">
+          <label class="small" for="kq<%= y.id %>">Nhận xét trình độ và khóa học đề xuất</label>
+          <textarea class="input" id="kq<%= y.id %>" name="ket_qua_gv" maxlength="2000" placeholder="VD: Trình độ Cơ bản, nên học TOEIC 450+ cho người mất gốc"></textarea>
+          <button class="btn btn-sm mt">Gửi đề xuất</button>
+        </form>
+      <% } else { %>
+        <div class="reply small"><b>Đề xuất của bạn:</b> <%= y.ket_qua_gv || '–' %></div>
+        <% if (y.ket_qua) { %><p class="small mt"><b>Kết quả tư vấn:</b> <%= y.ket_qua %></p><% } %>
+      <% } %>
+    </div>
+  <% }) %>
+  <% if (!items.length) { %><div class="card empty">Chưa có yêu cầu kiểm tra trình độ nào được chuyển cho bạn.</div><% } %>
+</div>
+<details class="card mt"><summary class="small" style="cursor:pointer">Danh sách khóa học đang mở để tham khảo khi đề xuất</summary>
+  <ul class="small"><% courses.forEach(c => { %><li><%= c.ten %></li><% }) %></ul></details>
+<%- include('../partials/staff-end') %>

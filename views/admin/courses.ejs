@@ -1,0 +1,24 @@
+<%- include('../partials/staff-start') %>
+<div class="row between mb">
+  <div class="chips">
+    <% [['tat-ca', 'Tất cả'], ['cho-duyet', 'Chờ duyệt'], ['nhap', 'Nháp'], ['can-sua', 'Cần sửa'], ['dang-mo', 'Đang mở'], ['da-an', 'Đã ẩn']].forEach(([k, l]) => { %>
+      <a class="chip <%= tab === k ? 'active' : '' %>" href="?tab=<%= k %>"><%= l %></a>
+    <% }) %>
+  </div>
+  <a class="btn" href="/admin/khoa-hoc/them">Thêm khóa học</a>
+</div>
+<form class="filters" method="get"><input type="hidden" name="tab" value="<%= tab %>"><input class="input" style="flex:1" name="q" value="<%= q %>" placeholder="Tên khóa học hoặc giáo viên"><button class="btn">Tìm</button></form>
+<div class="card card-flush table-wrap">
+  <table class="table">
+    <thead><tr><th>Khóa học</th><th>Giáo viên</th><th>Khai giảng</th><th>Học phí</th><th>Sĩ số</th><th>Bài</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <% courses.forEach(c => { %>
+        <tr><td><a href="/admin/khoa-hoc/<%= c.id %>"><b><%= c.ten %></b></a><div class="small muted"><%= h.label('danhMuc', c.danh_muc) %> · <%= c.trinh_do || '' %></div></td>
+          <td><%= c.giao_vien_ten || '–' %></td><td><%= h.date(c.ngay_khai_giang) %></td><td><%= h.money(c.gia) %></td>
+          <td><%= c.so_hoc_vien %>/<%= c.so_cho_toi_da %></td><td><%= c.so_bai %></td><td><%- h.badge('khoaHoc', c.trang_thai) %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% if (!courses.length) { %><div class="empty">Không có khóa học.</div><% } %>
+</div>
+<%- include('../partials/staff-end') %>

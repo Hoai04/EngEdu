@@ -1,0 +1,18 @@
+<%- include('../partials/staff-start') %>
+<div class="chips mb">
+  <a class="chip <%= tab === 'chua' ? 'active' : '' %>" href="?tab=chua">Chưa phản hồi</a>
+  <a class="chip <%= tab === 'da' ? 'active' : '' %>" href="?tab=da">Đã phản hồi</a>
+</div>
+<div class="stack">
+  <% reviews.forEach(r => { %>
+    <form class="card" method="post" action="/teacher/danh-gia/<%= r.id %>/phan-hoi">
+      <div class="row between"><div><b><%= r.ho_ten %></b> <span class="muted small">· <%= r.khoa_hoc_ten %></span></div><span class="small muted"><%= h.datetime(r.ngay_tao) %></span></div>
+      <div class="rating"><%= h.stars(r.so_sao) %></div>
+      <% if (r.noi_dung) { %><p><%= r.noi_dung %></p><% } %>
+      <textarea class="input" name="phan_hoi_gv" maxlength="1000" placeholder="Viết phản hồi hiển thị công khai dưới đánh giá"><%= r.phan_hoi_gv || '' %></textarea>
+      <button class="btn btn-sm mt"><%= r.phan_hoi_gv ? 'Cập nhật phản hồi' : 'Gửi phản hồi' %></button>
+    </form>
+  <% }) %>
+  <% if (!reviews.length) { %><div class="card empty"><%= tab === 'chua' ? 'Không có đánh giá nào cần phản hồi.' : 'Chưa phản hồi đánh giá nào.' %></div><% } %>
+</div>
+<%- include('../partials/staff-end') %>

@@ -1,0 +1,7 @@
+<%- include('../partials/staff-start', { crumbs: [['/admin/khoa-hoc', 'Khóa học']] }) %>
+<form class="card" method="post" action="/admin/khoa-hoc/them" novalidate style="max-width:900px">
+  <p class="small muted">Khóa học mới được tạo ở trạng thái <b>Nháp</b>. Giáo viên được phân công nhận thông báo, soạn bài giảng và gửi duyệt.</p>
+  <%- include('../partials/course-fields') %>
+  <div class="row"><button class="btn">Tạo khóa học</button><a class="btn btn-outline" href="/admin/khoa-hoc">Hủy</a></div>
+</form>
+<%- include('../partials/staff-end') %>

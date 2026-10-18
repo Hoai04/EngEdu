@@ -1,0 +1,16 @@
+<%- include('../partials/staff-start') %>
+<form class="filters" method="get"><input class="input" style="flex:1" name="q" value="<%= q %>" placeholder="Tên, email, số điện thoại, chuyên môn"><button class="btn">Tìm</button>
+  <a class="btn" href="/admin/giao-vien/them">Thêm giáo viên</a></form>
+<div class="card card-flush table-wrap">
+  <table class="table">
+    <thead><tr><th>Giáo viên</th><th>Liên hệ</th><th>Chuyên môn</th><th>Kinh nghiệm</th><th>Khóa học</th><th>Học viên</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <% teachers.forEach(t => { %>
+        <tr><td><a href="/admin/giao-vien/<%= t.id %>"><b><%= t.ho_ten %></b></a></td><td class="small"><%= t.email %><br><%= t.sdt || '' %></td><td><%= t.chuyen_mon || '–' %></td>
+          <td><%= t.kinh_nghiem_nam %> năm</td><td><%= t.so_khoa %></td><td><%= t.so_hv %></td><td><%- h.badge('taiKhoan', t.trang_thai) %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% if (!teachers.length) { %><div class="empty">Không có giáo viên.</div><% } %>
+</div>
+<%- include('../partials/staff-end') %>

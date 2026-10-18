@@ -1,0 +1,34 @@
+<%- include('../partials/staff-start', { crumbs: [['/teacher/hoc-vien', 'Học viên']] }) %>
+<div class="detail-layout">
+  <div class="stack">
+    <h3>Khóa học với bạn</h3>
+    <% enrollments.forEach(en => { const r = reviews.find(x => x.khoa_hoc_id === en.khoa_hoc_id); const pct = en.so_bai ? Math.round(100 * en.da_hoc / en.so_bai) : 0; %>
+      <div class="card">
+        <div class="row between"><b><a href="/teacher/khoa-hoc/<%= en.khoa_hoc_id %>"><%= en.khoa_hoc_ten %></a></b><span class="small muted">Vào lớp <%= h.date(en.ngay_duyet) %></span></div>
+        <dl class="info mt">
+          <dt>Trình độ khi đăng ký</dt><dd><%= en.trinh_do_hien_tai || '–' %></dd>
+          <dt>Mục tiêu</dt><dd><%= en.muc_tieu || '–' %></dd>
+          <dt>Ghi chú của học viên</dt><dd><%= en.ghi_chu_hv || '–' %></dd>
+          <dt>Ghi chú của trung tâm</dt><dd><%= en.ghi_chu_admin || '–' %></dd>
+          <dt>Tiến độ</dt><dd><%= en.da_hoc %>/<%= en.so_bai %> bài (<%= pct %>%)<div class="progress mt" style="max-width:260px"><i style="width:<%= pct %>%"></i></div></dd>
+          <dt>Đánh giá</dt><dd><% if (r) { %><span class="rating"><%= h.stars(r.so_sao) %></span> <%= r.noi_dung || '' %> <%- h.badge('danhGia', r.trang_thai) %><% } else { %>–<% } %></dd>
+        </dl>
+      </div>
+    <% }) %>
+  </div>
+  <aside class="card">
+    <div class="row"><span class="avatar avatar-lg"><%= h.initials(student.ho_ten) %></span><div><h3 style="margin:0"><%= student.ho_ten %></h3><div class="small muted">Học viên</div></div></div>
+    <dl class="info mt">
+      <dt>Email</dt><dd><%= student.email %></dd>
+      <dt>Điện thoại</dt><dd><%= student.sdt || '–' %></dd>
+      <dt>Ngày sinh</dt><dd><%= student.ngay_sinh ? `${h.date(student.ngay_sinh)} (${h.age(student.ngay_sinh)} tuổi)` : '–' %></dd>
+      <dt>Giới tính</dt><dd><%= h.label('gioiTinh', student.gioi_tinh) || '–' %></dd>
+      <dt>Trình độ</dt><dd><%= student.trinh_do || '–' %></dd>
+      <dt>Nghề nghiệp</dt><dd><%= student.nghe_nghiep || '–' %></dd>
+      <dt>Nơi học / làm</dt><dd><%= student.noi_hoc_lam || '–' %></dd>
+      <dt>Mục tiêu</dt><dd><%= student.muc_tieu || '–' %></dd>
+    </dl>
+    <p class="small muted mt">Địa chỉ và thông tin thanh toán của học viên không hiển thị với giáo viên.</p>
+  </aside>
+</div>
+<%- include('../partials/staff-end') %>

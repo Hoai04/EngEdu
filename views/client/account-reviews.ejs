@@ -1,0 +1,16 @@
+<%- include('../partials/account-start', { active: 'danh-gia' }) %>
+<h2>Đánh giá của tôi</h2>
+<% if (!items.length) { %><div class="card empty mt">Bạn chưa đánh giá khóa học nào.</div><% } %>
+<div class="stack mt">
+  <% items.forEach(r => { %>
+    <div class="card">
+      <div class="row between"><b><a href="/khoa-hoc/<%= r.khoa_hoc_id %>"><%= r.khoa_hoc_ten %></a></b><%- h.badge('danhGia', r.trang_thai) %></div>
+      <div class="rating"><%= h.stars(r.so_sao) %></div>
+      <% if (r.noi_dung) { %><p class="mt"><%= r.noi_dung %></p><% } %>
+      <% if (r.trang_thai === 'BI_AN' && r.ly_do_an) { %><p class="small" style="color:var(--error)">Lý do ẩn: <%= r.ly_do_an %></p><% } %>
+      <% if (r.phan_hoi_gv) { %><div class="reply small"><b>Giáo viên:</b> <%= r.phan_hoi_gv %></div><% } %>
+      <div class="row between mt"><span class="small muted"><%= h.datetime(r.ngay_tao) %></span><a class="btn btn-sm btn-outline" href="/hoc/<%= r.khoa_hoc_id %>/danh-gia">Sửa</a></div>
+    </div>
+  <% }) %>
+</div>
+<%- include('../partials/account-end') %>

@@ -1,0 +1,13 @@
+<%- include('../partials/client-start') %>
+<section class="section" style="background:var(--muted)"><div class="container" style="max-width:420px">
+  <form class="card" method="post" action="/dang-nhap">
+    <h2>Đăng nhập</h2>
+    <p class="small muted">Một trang đăng nhập chung cho Học viên, Giáo viên và Admin.</p>
+    <% if (error) { %><div class="flash flash-error"><%= error %></div><% } %>
+    <div class="field"><label for="email">Email</label><input class="input" id="email" name="email" type="email" value="<%= email %>" required autofocus></div>
+    <div class="field"><label for="mat_khau">Mật khẩu</label><input class="input" id="mat_khau" name="mat_khau" type="password" required></div>
+    <button class="btn btn-block">Đăng nhập</button>
+    <p class="small muted mt">Chưa có tài khoản? <a href="/dang-ky">Đăng ký</a></p>
+  </form>
+</div></section>
+<%- include('../partials/client-end') %>

@@ -1,0 +1,36 @@
+<%- include('../partials/staff-start') %>
+<div class="card mb">
+  <h3>Doanh thu 12 tháng</h3>
+  <% const max = Math.max(1, ...revenue.map(r => r.tong)); %>
+  <div class="bars" style="gap:10px">
+    <% revenue.forEach(r => { %>
+      <div class="col"><span class="small"><%= (r.tong / 1e6).toFixed(1) %></span><div class="bar" style="height:<%= Math.round(160 * r.tong / max) %>px" title="<%= h.money(r.tong) %>"></div><span class="muted small"><%= r.thang.slice(0, 2) %></span></div>
+    <% }) %>
+  </div>
+  <p class="small muted">Đơn vị: triệu đồng, theo ngày xác nhận thanh toán.</p>
+</div>
+<div class="detail-layout" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)">
+  <div class="card card-flush table-wrap">
+    <h3 style="padding:16px 16px 0">Theo khóa học</h3>
+    <table class="table">
+      <thead><tr><th>Khóa học</th><th>Đăng ký</th><th>Doanh thu</th><th>Đánh giá</th></tr></thead>
+      <tbody><% byCourse.forEach(c => { %>
+        <tr><td><a href="/admin/khoa-hoc/<%= c.id %>"><%= c.ten %></a><div class="small muted"><%= h.label('danhMuc', c.danh_muc) %></div></td><td><%= c.dang_ky %></td>
+          <td><%= h.money(c.doanh_thu) %></td><td><%= c.diem ? `${c.diem} (${c.so_dg})` : '–' %></td></tr>
+      <% }) %></tbody>
+    </table>
+  </div>
+  <div class="stack">
+    <div class="card card-flush table-wrap">
+      <h3 style="padding:16px 16px 0">Theo danh mục</h3>
+      <table class="table"><thead><tr><th>Danh mục</th><th>Đăng ký</th><th>Doanh thu</th></tr></thead>
+        <tbody><% byCategory.forEach(c => { %><tr><td><%= h.label('danhMuc', c.danh_muc) %></td><td><%= c.dang_ky %></td><td><%= h.money(c.doanh_thu) %></td></tr><% }) %></tbody></table>
+    </div>
+    <div class="card card-flush table-wrap">
+      <h3 style="padding:16px 16px 0">Theo giáo viên</h3>
+      <table class="table"><thead><tr><th>Giáo viên</th><th>Khóa</th><th>Học viên</th><th>Đánh giá</th></tr></thead>
+        <tbody><% byTeacher.forEach(t => { %><tr><td><a href="/admin/giao-vien/<%= t.id %>"><%= t.ho_ten %></a></td><td><%= t.khoa %></td><td><%= t.hoc_vien %></td><td><%= t.diem || '–' %></td></tr><% }) %></tbody></table>
+    </div>
+  </div>
+</div>
+<%- include('../partials/staff-end') %>

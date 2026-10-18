@@ -1,0 +1,26 @@
+<%- include('../partials/account-start', { active: 'khoa-hoc' }) %>
+<h2>Khóa học của tôi</h2>
+<% if (!items.length) { %><div class="card empty mt">Bạn chưa đăng ký khóa học nào. <a href="/khoa-hoc">Xem khóa học</a></div><% } %>
+<div class="grid grid-2 mt">
+  <% items.forEach(it => { const pct = it.so_bai ? Math.round(100 * it.da_hoc / it.so_bai) : 0; %>
+    <div class="course-card">
+      <div class="course-cover"><b><%= h.label('danhMuc', it.danh_muc) %></b><small><%= it.trinh_do || '' %></small></div>
+      <div class="course-body">
+        <span class="title"><a href="/khoa-hoc/<%= it.khoa_hoc_id %>"><%= it.ten %></a></span>
+        <span class="small muted"><%= it.giao_vien_ten || '' %> · Khai giảng <%= h.date(it.ngay_khai_giang) %></span>
+        <div><% if (it.trang_thai === 'CHO_THANH_TOAN' && it.tt_trang_thai === 'CHO_XAC_NHAN') { %><%- h.badge('thanhToan', 'CHO_XAC_NHAN') %><% } else { %><%- h.badge('dangKy', it.trang_thai) %><% } %></div>
+        <% if (it.trang_thai === 'DA_KICH_HOAT') { %>
+          <span class="small">Tiến độ: <%= it.da_hoc %>/<%= it.so_bai %> bài (<%= pct %>%)</span>
+          <div class="progress"><i style="width:<%= pct %>%"></i></div>
+          <div class="row mt"><a class="btn btn-sm" href="/hoc/<%= it.khoa_hoc_id %>">Vào học</a><a class="btn btn-sm btn-outline" href="/hoc/<%= it.khoa_hoc_id %>/danh-gia">Đánh giá</a></div>
+        <% } else if (it.trang_thai === 'CHO_THANH_TOAN') { %>
+          <div class="row mt"><a class="btn btn-sm" href="/thanh-toan/<%= it.ma_don %>">Xem thanh toán</a></div>
+        <% } else { %>
+          <span class="small" style="color:var(--error)">Lý do: <%= it.ly_do_tu_choi %></span>
+          <div class="row mt"><a class="btn btn-sm" href="/dang-ky-hoc/<%= it.khoa_hoc_id %>">Đăng ký lại</a></div>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+<%- include('../partials/account-end') %>

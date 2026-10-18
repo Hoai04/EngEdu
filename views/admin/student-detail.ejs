@@ -1,0 +1,50 @@
+<%- include('../partials/staff-start', { crumbs: [['/admin/hoc-vien', 'Học viên']] }) %>
+<nav class="tabs">
+  <a href="?tab=thong-tin" class="<%= tab === 'thong-tin' ? 'active' : '' %>">Thông tin</a>
+  <a href="?tab=khoa-hoc" class="<%= tab === 'khoa-hoc' ? 'active' : '' %>">Khóa học (<%= enrollments.length %>)</a>
+  <a href="?tab=thanh-toan" class="<%= tab === 'thanh-toan' ? 'active' : '' %>">Thanh toán (<%= payments.length %>)</a>
+  <a href="?tab=danh-gia" class="<%= tab === 'danh-gia' ? 'active' : '' %>">Đánh giá (<%= reviews.length %>)</a>
+</nav>
+<div class="detail-layout">
+  <div>
+    <% if (tab === 'thong-tin') { %>
+      <div class="card">
+        <div class="row between"><div class="row"><span class="avatar avatar-lg"><%= h.initials(student.ho_ten) %></span><div><h3 style="margin:0"><%= student.ho_ten %></h3><div class="small muted">Học viên từ <%= h.date(student.ngay_tao) %></div></div></div><%- h.badge('taiKhoan', student.trang_thai) %></div>
+        <dl class="info mt">
+          <dt>Email</dt><dd><%= student.email %></dd>
+          <dt>Số điện thoại</dt><dd><%= student.sdt || '–' %></dd>
+          <dt>Ngày sinh</dt><dd><%= student.ngay_sinh ? `${h.date(student.ngay_sinh)} (${h.age(student.ngay_sinh)} tuổi)` : '–' %></dd>
+          <dt>Giới tính</dt><dd><%= h.label('gioiTinh', student.gioi_tinh) || '–' %></dd>
+          <dt>Địa chỉ</dt><dd><%= student.dia_chi || '–' %></dd>
+          <dt>Nghề nghiệp</dt><dd><%= student.nghe_nghiep || '–' %></dd>
+          <dt>Trường học / Nơi làm</dt><dd><%= student.noi_hoc_lam || '–' %></dd>
+          <dt>Trình độ</dt><dd><%= student.trinh_do || '–' %></dd>
+          <dt>Mục tiêu</dt><dd><%= student.muc_tieu || '–' %></dd>
+        </dl>
+      </div>
+    <% } else if (tab === 'khoa-hoc') { %>
+      <div class="card card-flush table-wrap"><table class="table"><thead><tr><th>Khóa học</th><th>Giáo viên</th><th>Ngày đăng ký</th><th>Trạng thái</th></tr></thead>
+        <tbody><% enrollments.forEach(e => { %><tr><td><a href="/admin/khoa-hoc/<%= e.khoa_hoc_id %>"><%= e.ten %></a><div class="small muted"><%= e.trinh_do_hien_tai || '' %> · <%= e.muc_tieu || '' %></div></td>
+          <td><%= e.giao_vien_ten || '–' %></td><td><%= h.datetime(e.ngay_dang_ky) %></td><td><%- h.badge('dangKy', e.trang_thai) %></td></tr><% }) %></tbody></table>
+        <% if (!enrollments.length) { %><div class="empty">Chưa đăng ký khóa học nào.</div><% } %></div>
+    <% } else if (tab === 'thanh-toan') { %>
+      <div class="card card-flush table-wrap"><table class="table"><thead><tr><th>Mã đơn</th><th>Khóa học</th><th>Số tiền</th><th>Mã GD</th><th>Ngày</th><th>Trạng thái</th></tr></thead>
+        <tbody><% payments.forEach(p => { %><tr><td><b><%= p.ma_don %></b></td><td><%= p.khoa_hoc_ten %></td><td><%= h.money(p.so_tien) %></td><td><%= p.ma_gd_ngan_hang || '–' %></td>
+          <td><%= h.datetime(p.ngay_tao) %></td><td><%- h.badge('thanhToan', p.trang_thai) %></td></tr><% }) %></tbody></table>
+        <% if (!payments.length) { %><div class="empty">Chưa có thanh toán.</div><% } %></div>
+    <% } else { %>
+      <div class="stack"><% reviews.forEach(r => { %><div class="card"><div class="row between"><b><%= r.khoa_hoc_ten %></b><%- h.badge('danhGia', r.trang_thai) %></div>
+        <div class="rating"><%= h.stars(r.so_sao) %></div><p><%= r.noi_dung || '' %></p></div><% }) %>
+        <% if (!reviews.length) { %><div class="card empty">Chưa có đánh giá.</div><% } %></div>
+    <% } %>
+  </div>
+  <aside class="card">
+    <h3>Tài khoản</h3>
+    <% if (student.trang_thai === 'HOAT_DONG') { %>
+      <form method="post" action="/admin/hoc-vien/<%= student.id %>/khoa" onsubmit="return confirm('Khóa tài khoản học viên?')"><button class="btn btn-outline btn-block">Khóa tài khoản</button></form>
+    <% } else { %>
+      <form method="post" action="/admin/hoc-vien/<%= student.id %>/mo-khoa"><button class="btn btn-block">Mở khóa tài khoản</button></form>
+    <% } %>
+  </aside>
+</div>
+<%- include('../partials/staff-end') %>

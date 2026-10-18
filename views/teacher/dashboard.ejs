@@ -1,0 +1,23 @@
+<%- include('../partials/staff-start') %>
+<div class="stat-cards">
+  <div class="stat-card"><div class="label">Khóa học phụ trách</div><div class="value"><%= stats.khoa_hoc %></div><a class="small" href="/teacher/khoa-hoc">Xem khóa học</a></div>
+  <div class="stat-card"><div class="label">Học viên đang học</div><div class="value"><%= stats.hoc_vien %></div><a class="small" href="/teacher/hoc-vien">Xem học viên</a></div>
+  <div class="stat-card"><div class="label">Đánh giá chưa phản hồi</div><div class="value"><%= counts.danhGia %></div><a class="small" href="/teacher/danh-gia">Phản hồi</a></div>
+  <div class="stat-card"><div class="label">Điểm đánh giá trung bình</div><div class="value"><%= stats.diem_tb || '–' %>★</div><a class="small" href="/teacher/danh-gia?tab=da">Xem đánh giá</a></div>
+</div>
+<% if (counts.tuVan) { %><div class="flash">Có <b><%= counts.tuVan %></b> yêu cầu kiểm tra trình độ đang chờ bạn. <a href="/teacher/tu-van">Xem ngay</a></div><% } %>
+<h3>Học viên mới</h3>
+<div class="card card-flush table-wrap">
+  <table class="table">
+    <thead><tr><th>Học viên</th><th>Khóa học</th><th>Trình độ</th><th>Mục tiêu</th><th>Ghi chú của trung tâm</th><th>Ngày vào lớp</th></tr></thead>
+    <tbody>
+      <% newStudents.forEach(s => { %>
+        <tr><td><a href="/teacher/hoc-vien/<%= s.hoc_vien_id %>"><b><%= s.ho_ten %></b></a></td><td><%= s.khoa_hoc_ten %></td><td><%= s.trinh_do_hien_tai || '–' %></td>
+          <td><%= s.muc_tieu || '–' %></td><td class="small"><%= s.ghi_chu_admin || '–' %></td><td><%= h.date(s.ngay_duyet) %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% if (!newStudents.length) { %><div class="empty">Chưa có học viên. Học viên xuất hiện sau khi Admin xác nhận thanh toán.</div><% } %>
+</div>
+<p class="small muted mt">Hồ sơ học viên không hiển thị địa chỉ và thông tin thanh toán.</p>
+<%- include('../partials/staff-end') %>

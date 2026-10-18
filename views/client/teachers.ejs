@@ -1,0 +1,21 @@
+<%- include('../partials/client-start') %>
+<div class="page-head"><div class="container">
+  <div class="crumb"><a href="/">Trang chủ</a> › Giáo viên</div>
+  <h1>Đội ngũ giáo viên</h1><p class="muted"><%= teachers.length %> giáo viên đang giảng dạy tại EngEdu</p>
+</div></div>
+<section class="section"><div class="container grid grid-4">
+  <% teachers.forEach(t => { %>
+    <a class="card" href="/giao-vien/<%= t.id %>" style="text-align:center;color:var(--text);text-decoration:none">
+      <span class="avatar avatar-lg"><%= h.initials(t.ho_ten) %></span>
+      <h3 class="mt" style="margin-bottom:2px"><%= t.ho_ten %></h3>
+      <div class="small muted"><%= t.chuyen_mon || '' %></div>
+      <div class="chips mt" style="justify-content:center">
+        <% if (t.chung_chi) { %><span class="badge badge-neutral"><%= t.chung_chi %></span><% } %>
+        <span class="badge badge-neutral"><%= t.kinh_nghiem_nam %> năm kinh nghiệm</span>
+      </div>
+      <div class="small muted mt"><%= t.so_khoa %> khóa học đang mở</div>
+    </a>
+  <% }) %>
+  <% if (!teachers.length) { %><div class="card empty">Chưa có giáo viên.</div><% } %>
+</div></section>
+<%- include('../partials/client-end') %>

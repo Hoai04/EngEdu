@@ -1,0 +1,15 @@
+<%- include('../partials/staff-start') %>
+<form class="filters" method="get"><input class="input" style="min-width:320px" name="q" value="<%= q %>" placeholder="Tìm theo tên, email, số điện thoại"><button class="btn">Tìm</button></form>
+<div class="card card-flush table-wrap">
+  <table class="table">
+    <thead><tr><th>Học viên</th><th>Liên hệ</th><th>Trình độ</th><th>Khóa học</th><th>Ngày vào lớp</th></tr></thead>
+    <tbody>
+      <% students.forEach(s => { %>
+        <tr><td><a href="/teacher/hoc-vien/<%= s.id %>"><b><%= s.ho_ten %></b></a></td><td class="small"><%= s.email %><br><%= s.sdt %></td>
+          <td><%= s.trinh_do || '–' %></td><td class="small"><%= s.khoa_hoc %></td><td><%= h.date(s.ngay_vao) %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% if (!students.length) { %><div class="empty">Không có học viên.</div><% } %>
+</div>
+<%- include('../partials/staff-end') %>

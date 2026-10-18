@@ -1,0 +1,26 @@
+<%- include('../partials/client-start') %>
+<div class="page-head"><div class="container">
+  <div class="crumb"><a href="/">Trang chủ</a> › <a href="/giao-vien">Giáo viên</a> › <%= teacher.ho_ten %></div>
+  <div class="row"><span class="avatar avatar-lg"><%= h.initials(teacher.ho_ten) %></span>
+    <div><h1 style="margin:0"><%= teacher.ho_ten %></h1><div class="muted"><%= teacher.chuyen_mon || '' %>
+      <% if (rating.n) { %> · <span class="rating"><%= h.stars(rating.diem) %></span> <%= rating.diem %> (<%= rating.n %> đánh giá)<% } %></div></div></div>
+</div></div>
+<section class="section"><div class="container detail-layout">
+  <div>
+    <h2>Khóa học đang mở</h2>
+    <div class="grid grid-4 mt">
+      <% courses.forEach(c => { %><%- include('../partials/course-card', { c }) %><% }) %>
+    </div>
+    <% if (!courses.length) { %><div class="card empty">Giáo viên chưa có khóa học đang mở.</div><% } %>
+  </div>
+  <aside class="card">
+    <h3>Hồ sơ</h3>
+    <dl class="info">
+      <dt>Học vị</dt><dd><%= teacher.hoc_vi || '–' %></dd>
+      <dt>Chứng chỉ</dt><dd><%= teacher.chung_chi || '–' %></dd>
+      <dt>Kinh nghiệm</dt><dd><%= teacher.kinh_nghiem_nam %> năm</dd>
+    </dl>
+    <% if (teacher.gioi_thieu) { %><p class="mt" style="white-space:pre-line"><%= teacher.gioi_thieu %></p><% } %>
+  </aside>
+</div></section>
+<%- include('../partials/client-end') %>

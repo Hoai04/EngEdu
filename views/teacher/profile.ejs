@@ -1,0 +1,25 @@
+<%- include('../partials/staff-start') %>
+<% const e = (n) => errors[n]; %>
+<div class="detail-layout">
+  <form class="card" method="post" action="/teacher/ho-so" novalidate>
+    <h3>Thông tin bạn được tự cập nhật</h3>
+    <div class="field <%= e('sdt') ? 'has-error' : '' %>"><label for="sdt">Số điện thoại</label><input class="input" id="sdt" name="sdt" value="<%= v.sdt || '' %>">
+      <% if (e('sdt')) { %><div class="error-text"><%= e('sdt') %></div><% } %></div>
+    <div class="field"><label for="gioi_thieu">Giới thiệu</label><textarea class="input" id="gioi_thieu" name="gioi_thieu" rows="6" maxlength="3000"><%= v.gioi_thieu || '' %></textarea></div>
+    <button class="btn">Lưu</button>
+  </form>
+  <aside class="card">
+    <h3>Hồ sơ do trung tâm quản lý</h3>
+    <dl class="info small">
+      <dt>Họ tên</dt><dd><%= currentUser.ho_ten %></dd>
+      <dt>Email</dt><dd><%= currentUser.email %></dd>
+      <dt>Chuyên môn</dt><dd><%= profile.chuyen_mon || '–' %></dd>
+      <dt>Học vị</dt><dd><%= profile.hoc_vi || '–' %></dd>
+      <dt>Chứng chỉ</dt><dd><%= profile.chung_chi || '–' %></dd>
+      <dt>Kinh nghiệm</dt><dd><%= profile.kinh_nghiem_nam %> năm</dd>
+      <dt>Ngày vào làm</dt><dd><%= h.date(profile.ngay_vao_lam) || '–' %></dd>
+    </dl>
+    <p class="small muted mt">Liên hệ Admin nếu cần sửa các thông tin này.</p>
+  </aside>
+</div>
+<%- include('../partials/staff-end') %>

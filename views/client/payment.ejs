@@ -1,0 +1,90 @@
+<%- include('../partials/client-start') %>
+<% const st = order.trang_thai; const hold = Number(order.con_giu_cho); %>
+<section class="section"><div class="container">
+  <div class="crumb"><a href="/tai-khoan/khoa-hoc">Khóa học của tôi</a> › <%= order.khoa_hoc_ten %> › Thanh toán</div>
+  <h2>Thanh toán học phí</h2>
+  <div class="detail-layout mt">
+    <div class="card">
+      <% if (st === 'CHO_THANH_TOAN' || st === 'CHO_XAC_NHAN') { %>
+        <div class="row" style="align-items:flex-start;gap:28px">
+          <div class="qr-box">
+            <img src="<%= qr %>" alt="Mã QR VietQR cho đơn <%= order.ma_don %>" width="220" height="220">
+            <span class="small muted">Quét mã bằng ứng dụng ngân hàng</span>
+          </div>
+          <div style="flex:1;min-width:260px">
+            <h3>Thông tin chuyển khoản</h3>
+            <dl class="info">
+              <dt>Ngân hàng</dt><dd><%= bank.bankId %></dd>
+              <dt>Số tài khoản</dt><dd><%= bank.accountNo %></dd>
+              <dt>Chủ tài khoản</dt><dd><%= bank.accountName %></dd>
+              <dt>Số tiền</dt><dd><b style="color:var(--primary)"><%= h.money(order.so_tien) %></b></dd>
+              <dt>Nội dung</dt><dd><b style="color:var(--primary)"><%= order.ma_don %></b></dd>
+            </dl>
+            <p class="small muted mt">Vui lòng ghi đúng nội dung chuyển khoản là mã đơn.</p>
+            <% if (st === 'CHO_THANH_TOAN') { %>
+              <% if (hold) { %>
+                <p>Giữ chỗ còn <span class="timer" id="timer" data-seconds="<%= order.giay_con_lai %>">--:--</span></p>
+              <% } else { %>
+                <div class="flash flash-error">Đã hết thời gian giữ chỗ.
+                  <form class="inline" method="post" action="/thanh-toan/<%= order.ma_don %>/giu-cho"><button class="btn-link">Giữ chỗ lại</button></form></div>
+              <% } %>
+            <% } %>
+          </div>
+        </div>
+        <% if (st === 'CHO_THANH_TOAN') { %>
+          <div class="note mt">Sau khi chuyển khoản, nhấn <b>"Tôi đã chuyển khoản"</b> để trung tâm đối chiếu và kích hoạt khóa học.</div>
+          <form method="post" action="/thanh-toan/<%= order.ma_don %>/da-chuyen-khoan" class="mt"><button class="btn">Tôi đã chuyển khoản</button>
+            <a class="btn btn-outline" href="/tai-khoan/khoa-hoc">Khóa học của tôi</a></form>
+        <% } else { %>
+          <div class="note mt" id="waiting">Đang xác nhận thanh toán. Trang tự kiểm tra trạng thái mỗi 5 giây và cập nhật khi khóa học được kích hoạt.</div>
+        <% } %>
+      <% } else if (st === 'DA_THANH_TOAN') { %>
+        <div class="stack" style="text-align:center;padding:24px 0">
+          <h2>Thanh toán thành công!</h2>
+          <p class="muted">Khóa học <b><%= order.khoa_hoc_ten %></b> đã được kích hoạt.</p>
+          <div class="row" style="justify-content:center"><a class="btn" href="/hoc/<%= order.khoa_hoc_id %>">Vào học</a></div>
+        </div>
+      <% } else { %>
+        <div class="stack" style="text-align:center;padding:24px 0">
+          <h2>Thanh toán bị từ chối</h2>
+          <p class="muted">Lý do: <%= order.ly_do_tu_choi || 'Không nhận được giao dịch.' %></p>
+          <% if (order.dk_trang_thai === 'BI_TU_CHOI') { %><div class="row" style="justify-content:center"><a class="btn" href="/dang-ky-hoc/<%= order.khoa_hoc_id %>">Đăng ký lại</a></div><% } %>
+        </div>
+      <% } %>
+    </div>
+    <aside class="card">
+      <h3>Đơn <%= order.ma_don %></h3>
+      <dl class="info">
+        <dt>Khóa học</dt><dd><%= order.khoa_hoc_ten %></dd>
+        <dt>Giáo viên</dt><dd><%= order.giao_vien_ten || '–' %></dd>
+        <dt>Số tiền</dt><dd><%= h.money(order.so_tien) %></dd>
+        <dt>Ngày tạo</dt><dd><%= h.datetime(order.ngay_tao) %></dd>
+        <dt>Trạng thái</dt><dd><%- h.badge('thanhToan', st) %></dd>
+      </dl>
+    </aside>
+  </div>
+</div></section>
+<script>
+  (function () {
+    var t = document.getElementById('timer');
+    if (t) {
+      var s = Number(t.dataset.seconds);
+      var tick = function () {
+        if (s <= 0) { location.reload(); return; }
+        t.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+        s -= 1;
+      };
+      tick(); setInterval(tick, 1000);
+    }
+    var current = <%- JSON.stringify(st) %>;
+    if (current === 'CHO_THANH_TOAN' || current === 'CHO_XAC_NHAN') {
+      setInterval(function () {
+        fetch('/thanh-toan/<%= order.ma_don %>/trang-thai', { headers: { Accept: 'application/json' } })
+          .then(function (r) { return r.json(); })
+          .then(function (d) { if (d.trang_thai && d.trang_thai !== current) location.reload(); })
+          .catch(function () {});
+      }, 5000);
+    }
+  })();
+</script>
+<%- include('../partials/client-end') %>

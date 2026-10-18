@@ -1,0 +1,44 @@
+<%- include('../partials/staff-start') %>
+<div class="chips mb">
+  <% [['cho-xac-nhan', 'Chờ xác nhận'], ['chua-chuyen', 'Chưa chuyển khoản'], ['da-thanh-toan', 'Đã thanh toán'], ['tu-choi', 'Từ chối']].forEach(([k, l]) => { %>
+    <a class="chip <%= tab === k ? 'active' : '' %>" href="?tab=<%= k %>"><%= l %><% if (k === 'cho-xac-nhan' && counts.thanhToan) { %> (<%= counts.thanhToan %>)<% } %></a>
+  <% }) %>
+</div>
+<div class="card card-flush table-wrap">
+  <table class="table">
+    <thead><tr><th>Mã đơn</th><th>Học viên</th><th>Khóa học</th><th>Số tiền</th><th>Thông tin đăng ký</th><th><%= ['cho-xac-nhan', 'chua-chuyen'].includes(tab) ? 'Xử lý' : 'Kết quả' %></th></tr></thead>
+    <tbody>
+      <% items.forEach(p => { %>
+        <tr>
+          <td><b style="color:var(--primary)"><%= p.ma_don %></b><div class="small muted"><%= h.datetime(p.ngay_tao) %></div></td>
+          <td><a href="/admin/hoc-vien/<%= p.hoc_vien_id %>"><%= p.hoc_vien_ten %></a><div class="small muted"><%= p.hoc_vien_sdt %></div></td>
+          <td><%= p.khoa_hoc_ten %><div class="small muted">GV: <%= p.giao_vien_ten || '–' %></div></td>
+          <td><b><%= h.money(p.so_tien) %></b></td>
+          <td class="small">Trình độ: <%= p.trinh_do_hien_tai || '–' %><br>Mục tiêu: <%= p.muc_tieu || '–' %><% if (p.ghi_chu_hv) { %><br>Ghi chú: <%= p.ghi_chu_hv %><% } %></td>
+          <td>
+            <% if (['CHO_XAC_NHAN', 'CHO_THANH_TOAN'].includes(p.trang_thai)) { %>
+              <form class="cell-form" method="post" action="/admin/thanh-toan/<%= p.id %>/xac-nhan">
+                <input class="input" name="ma_gd_ngan_hang" placeholder="Mã giao dịch ngân hàng" required maxlength="50">
+                <textarea class="input" name="ghi_chu_admin" rows="2" placeholder="Ghi chú cho giáo viên" maxlength="1000"></textarea>
+                <button class="btn btn-sm">Xác nhận</button>
+              </form>
+              <details class="mt small"><summary class="btn-link">Từ chối</summary>
+                <form class="cell-form mt" method="post" action="/admin/thanh-toan/<%= p.id %>/tu-choi">
+                  <input class="input" name="ly_do" placeholder="Lý do từ chối" required maxlength="500" value="Không nhận được giao dịch với nội dung <%= p.ma_don %>">
+                  <button class="btn btn-sm btn-outline">Xác nhận từ chối</button>
+                </form></details>
+            <% } else { %>
+              <%- h.badge('thanhToan', p.trang_thai) %>
+              <div class="small muted"><%= h.datetime(p.ngay_xac_nhan) %></div>
+              <% if (p.ma_gd_ngan_hang) { %><div class="small">Mã GD: <%= p.ma_gd_ngan_hang %></div><% } %>
+              <% if (p.trang_thai === 'TU_CHOI' && p.ly_do_tu_choi) { %><div class="small muted"><%= p.ly_do_tu_choi %></div><% } %>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% if (!items.length) { %><div class="empty">Không có đơn nào.</div><% } %>
+</div>
+<% if (tab === 'cho-xac-nhan') { %><p class="small muted mt">Xác nhận chạy trong một giao dịch CSDL: kiểm tra mã giao dịch chưa dùng → cập nhật thanh toán → kích hoạt đăng ký → thông báo học viên và giáo viên.</p><% } %>
+<%- include('../partials/staff-end') %>
