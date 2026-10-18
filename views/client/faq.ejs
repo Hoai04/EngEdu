@@ -1,0 +1,15 @@
+<%- include('../partials/client-start') %>
+<div class="page-head"><div class="container"><div class="crumb"><a href="/">Trang chủ</a> › Hỏi đáp</div><h1>Câu hỏi thường gặp</h1></div></div>
+<section class="section"><div class="container" style="max-width:820px">
+  <% [
+    ['Làm sao để đăng ký khóa học?', 'Tạo tài khoản học viên, chọn khóa học và nhấn "Đăng ký học". Điền trình độ, mục tiêu rồi chuyển khoản bằng mã QR hiển thị trên màn hình.'],
+    ['Bao lâu khóa học được kích hoạt?', 'Sau khi bạn nhấn "Tôi đã chuyển khoản", trung tâm đối chiếu giao dịch và kích hoạt, thường dưới 10 phút trong giờ làm việc. Trang thanh toán tự cập nhật.'],
+    ['Đơn được giữ chỗ bao lâu?', 'Đơn chờ thanh toán giữ chỗ trong 15 phút. Hết thời gian bạn có thể nhấn "Giữ chỗ lại" nếu khóa học vẫn còn chỗ.'],
+    ['Nếu chuyển khoản bị từ chối?', 'Bạn sẽ nhận thông báo kèm lý do và có thể đăng ký lại ngay trên trang khóa học.'],
+    ['Ai được đánh giá khóa học?', 'Chỉ học viên đã kích hoạt khóa học. Đánh giá được trung tâm duyệt trước khi hiển thị công khai.'],
+    ['Tôi chưa biết trình độ của mình?', 'Gửi form Tư vấn, trung tâm sẽ liên hệ và có thể chuyển giáo viên kiểm tra trình độ miễn phí.'],
+  ].forEach(([q, a]) => { %>
+    <details class="card" style="margin-bottom:12px"><summary style="font-weight:600;cursor:pointer"><%= q %></summary><p class="mt muted" style="margin-bottom:0"><%= a %></p></details>
+  <% }) %>
+</div></section>
+<%- include('../partials/client-end') %>

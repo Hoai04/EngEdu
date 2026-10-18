@@ -1,0 +1,21 @@
+<% const seatsLeft = Math.max(0, Number(c.so_cho_toi_da) - Number(c.cho_da_dung || 0)); const pct = Math.min(100, Math.round(100 * Number(c.cho_da_dung || 0) / Number(c.so_cho_toi_da || 1))); %>
+<a class="course-card" href="/khoa-hoc/<%= c.id %>">
+  <div class="course-cover <%= ['GIAO_TIEP', 'THIEU_NHI'].includes(c.danh_muc) ? 'alt' : '' %>">
+    <b><%= h.label('danhMuc', c.danh_muc) %></b>
+    <small><%= c.trinh_do || '' %></small>
+  </div>
+  <div class="course-body">
+    <span class="muted small"><%= h.label('danhMuc', c.danh_muc) %> · <%= c.trinh_do || 'Mọi trình độ' %><%= c.thoi_luong ? ' · ' + c.thoi_luong : '' %></span>
+    <span class="title"><%= c.ten %></span>
+    <span class="small"><%= c.giao_vien_ten || 'Chưa phân công' %></span>
+    <span class="small rating"><% if (c.diem_tb) { %><%= h.stars(c.diem_tb) %> <%= c.diem_tb %> (<%= c.so_danh_gia %>)<% } else { %><span class="muted">Chưa có đánh giá</span><% } %></span>
+    <span class="small muted">Khai giảng: <%= h.date(c.ngay_khai_giang) || 'Liên hệ' %></span>
+    <div class="course-foot">
+      <span class="price"><%= h.money(c.gia) %></span>
+      <span class="small muted" style="text-align:right">
+        <%= seatsLeft > 0 ? `Còn ${seatsLeft} chỗ` : 'Đã đủ học viên' %>
+        <span class="seatbar"><i style="width:<%= pct %>%"></i></span>
+      </span>
+    </div>
+  </div>
+</a>

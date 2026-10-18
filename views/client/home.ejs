@@ -1,0 +1,50 @@
+<%- include('../partials/client-start') %>
+<section class="hero">
+  <div class="container">
+    <div class="stack">
+      <span class="badge badge-info">Khai giảng các lớp tháng 11</span>
+      <h1>Chinh phục tiếng Anh<br>cùng <span>EngEdu</span></h1>
+      <p class="muted" style="max-width:560px">Lộ trình IELTS, TOEIC, Giao tiếp, Business English và Tiếng Anh thiếu nhi. Lớp nhỏ, giáo viên đồng hành, học online và theo dõi tiến độ mọi lúc.</p>
+      <div class="row">
+        <a class="btn" href="/khoa-hoc">Xem khóa học</a>
+        <a class="btn btn-outline" href="/tu-van">Kiểm tra trình độ miễn phí</a>
+      </div>
+      <p class="small muted">• Lớp tối đa 30 học viên &nbsp; • Giáo viên chuyên môn cao &nbsp; • Thanh toán QR tiện lợi</p>
+    </div>
+    <div class="hero-visual">
+      <div class="screen"><span class="play"></span></div>
+      <p class="mt"><b>Học online</b> · Mọi lúc, mọi nơi</p>
+    </div>
+  </div>
+</section>
+<section class="stats-band">
+  <div class="container">
+    <div class="stat"><b><%= stats.khoa_hoc %></b><span>Khóa học đang mở</span></div>
+    <div class="stat"><b><%= stats.giao_vien %></b><span>Giáo viên</span></div>
+    <div class="stat"><b><%= stats.hoc_vien %></b><span>Học viên</span></div>
+    <div class="stat"><b><%= stats.diem_tb || '–' %>★</b><span>Điểm đánh giá trung bình</span></div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <h2>Danh mục khóa học</h2>
+    <div class="chips mt">
+      <% Object.entries(h.LABELS.danhMuc).forEach(([k, v]) => { const n = (categories.find(c => c.danh_muc === k) || {}).n || 0; %>
+        <a class="chip" href="/khoa-hoc?danh_muc=<%= k %>"><%= v %> · <%= n %> khóa</a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="row between mb">
+      <div><div class="small" style="color:var(--primary);font-weight:600">SẮP KHAI GIẢNG</div><h2 style="margin:0">Khóa học nổi bật</h2></div>
+      <a class="btn btn-outline" href="/khoa-hoc">Tất cả khóa học</a>
+    </div>
+    <% if (!courses.length) { %><div class="card empty">Chưa có khóa học nào đang mở đăng ký.</div><% } %>
+    <div class="grid grid-4">
+      <% courses.forEach(c => { %><%- include('../partials/course-card', { c }) %><% }) %>
+    </div>
+  </div>
+</section>
+<%- include('../partials/client-end') %>

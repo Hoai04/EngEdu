@@ -1,0 +1,7 @@
+<%- include('../partials/staff-start', { crumbs: [['/admin/giao-vien', 'Giáo viên']] }) %>
+<form class="card" method="post" action="/admin/giao-vien/them" novalidate style="max-width:900px">
+  <p class="small muted">Giáo viên không tự đăng ký. Hệ thống tạo tài khoản (vai trò Giáo viên) và hồ sơ trong cùng một giao dịch; sau đó bạn gửi email và mật khẩu ban đầu cho giáo viên.</p>
+  <%- include('../partials/teacher-fields', { isNew: true }) %>
+  <div class="row"><button class="btn">Cấp tài khoản giáo viên</button><a class="btn btn-outline" href="/admin/giao-vien">Hủy</a></div>
+</form>
+<%- include('../partials/staff-end') %>

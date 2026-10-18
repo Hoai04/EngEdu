@@ -1,0 +1,35 @@
+<%- include('../partials/client-start') %>
+<% const e = (n) => errors[n]; %>
+<section class="section"><div class="container detail-layout">
+  <form class="card" method="post" action="/dang-ky-hoc/<%= course.id %>" novalidate>
+    <div class="crumb"><a href="/khoa-hoc">Khóa học</a> › <a href="/khoa-hoc/<%= course.id %>"><%= course.ten %></a> › Đăng ký</div>
+    <h2>Đăng ký khóa học</h2>
+    <% if (rejected) { %><div class="flash flash-error">Đăng ký trước bị từ chối: <%= rejected.ly_do_tu_choi %>. Bạn có thể đăng ký lại.</div><% } %>
+    <div class="form-grid">
+      <div class="field"><label>Họ và tên</label><input class="input" value="<%= currentUser.ho_ten %>" disabled></div>
+      <div class="field"><label>Số điện thoại</label><input class="input" value="<%= currentUser.sdt || '' %>" disabled></div>
+      <div class="field full <%= e('trinh_do_hien_tai') ? 'has-error' : '' %>"><label for="trinh_do_hien_tai">Trình độ hiện tại</label>
+        <select class="input" id="trinh_do_hien_tai" name="trinh_do_hien_tai"><option value="">Chọn trình độ</option>
+          <% h.TRINH_DO.forEach(t => { %><option <%= v.trinh_do_hien_tai === t ? 'selected' : '' %>><%= t %></option><% }) %>
+        </select>
+        <% if (e('trinh_do_hien_tai')) { %><div class="error-text"><%= e('trinh_do_hien_tai') %></div><% } %></div>
+      <div class="field full <%= e('muc_tieu') ? 'has-error' : '' %>"><label for="muc_tieu">Mục tiêu học</label>
+        <textarea class="input" id="muc_tieu" name="muc_tieu" maxlength="500"><%= v.muc_tieu %></textarea>
+        <% if (e('muc_tieu')) { %><div class="error-text"><%= e('muc_tieu') %></div><% } %></div>
+      <div class="field full"><label for="ghi_chu_hv">Ghi chú cho giáo viên</label>
+        <textarea class="input" id="ghi_chu_hv" name="ghi_chu_hv" maxlength="1000" placeholder="Điểm mạnh, điểm yếu, điều bạn mong giáo viên lưu ý..."><%= v.ghi_chu_hv %></textarea></div>
+    </div>
+    <div class="row"><button class="btn">Tiếp tục thanh toán</button><a class="btn btn-outline" href="/khoa-hoc/<%= course.id %>">Hủy</a></div>
+  </form>
+  <aside class="card">
+    <div class="course-cover" style="margin:-20px -20px 16px;border-radius:10px 10px 0 0"><b><%= h.label('danhMuc', course.danh_muc) %></b><small><%= course.trinh_do || '' %></small></div>
+    <h3><%= course.ten %></h3>
+    <dl class="info small">
+      <dt>Khai giảng</dt><dd><%= h.date(course.ngay_khai_giang) || '–' %></dd>
+      <dt>Lịch học</dt><dd><%= course.lich_hoc || '–' %></dd>
+      <dt>Thời lượng</dt><dd><%= course.thoi_luong || '–' %></dd>
+      <dt>Học phí</dt><dd class="price"><%= h.money(course.gia) %></dd>
+    </dl>
+  </aside>
+</div></section>
+<%- include('../partials/client-end') %>

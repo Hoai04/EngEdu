@@ -1,0 +1,38 @@
+<%- include('../partials/client-start') %>
+<div class="page-head">
+  <div class="container">
+    <div class="crumb"><a href="/">Trang chủ</a> › Khóa học</div>
+    <h1>Tất cả khóa học</h1>
+    <p class="muted"><%= courses.length %> khóa học</p>
+    <form class="filters mt" method="get" action="/khoa-hoc">
+      <input class="input" style="min-width:260px" name="q" value="<%= f.q %>" placeholder="Tên khóa học hoặc giáo viên">
+      <select class="input" name="danh_muc">
+        <option value="">Mọi danh mục</option>
+        <% Object.entries(h.LABELS.danhMuc).forEach(([k, v]) => { %><option value="<%= k %>" <%= f.danh_muc === k ? 'selected' : '' %>><%= v %></option><% }) %>
+      </select>
+      <select class="input" name="trinh_do">
+        <option value="">Mọi trình độ</option>
+        <% levels.forEach(l => { %><option <%= f.trinh_do === l ? 'selected' : '' %>><%= l %></option><% }) %>
+      </select>
+      <select class="input" name="sap_xep">
+        <% [['khai_giang', 'Khai giảng sớm nhất'], ['gia_tang', 'Học phí tăng dần'], ['gia_giam', 'Học phí giảm dần'], ['danh_gia', 'Đánh giá cao nhất']].forEach(([k, v]) => { %>
+          <option value="<%= k %>" <%= f.sap_xep === k ? 'selected' : '' %>><%= v %></option>
+        <% }) %>
+      </select>
+      <button class="btn">Lọc</button>
+    </form>
+    <div class="chips">
+      <a class="chip <%= !f.danh_muc ? 'active' : '' %>" href="/khoa-hoc">Tất cả</a>
+      <% Object.entries(h.LABELS.danhMuc).forEach(([k, v]) => { %><a class="chip <%= f.danh_muc === k ? 'active' : '' %>" href="/khoa-hoc?danh_muc=<%= k %>"><%= v %></a><% }) %>
+    </div>
+  </div>
+</div>
+<section class="section">
+  <div class="container">
+    <% if (!courses.length) { %><div class="card empty">Không tìm thấy khóa học phù hợp.</div><% } %>
+    <div class="grid grid-4">
+      <% courses.forEach(c => { %><%- include('../partials/course-card', { c }) %><% }) %>
+    </div>
+  </div>
+</section>
+<%- include('../partials/client-end') %>

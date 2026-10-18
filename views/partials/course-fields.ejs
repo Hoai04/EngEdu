@@ -1,0 +1,22 @@
+<% const e = (n) => errors[n]; const fld = (n, l, type = 'text', extra = '') => { %>
+  <div class="field <%= e(n) ? 'has-error' : '' %>"><label for="<%= n %>"><%= l %></label><input class="input" id="<%= n %>" name="<%= n %>" type="<%= type %>" value="<%= v[n] ?? '' %>" <%- extra %>>
+    <% if (e(n)) { %><div class="error-text"><%= e(n) %></div><% } %></div>
+<% }; %>
+<div class="form-grid">
+  <div class="full"><% fld('ten', 'Tên khóa học') %></div>
+  <div class="field <%= e('danh_muc') ? 'has-error' : '' %>"><label for="danh_muc">Danh mục</label><select class="input" id="danh_muc" name="danh_muc"><option value="">Chọn danh mục</option>
+    <% Object.entries(h.LABELS.danhMuc).forEach(([k, l]) => { %><option value="<%= k %>" <%= v.danh_muc === k ? 'selected' : '' %>><%= l %></option><% }) %></select>
+    <% if (e('danh_muc')) { %><div class="error-text"><%= e('danh_muc') %></div><% } %></div>
+  <div class="field"><label for="trinh_do">Trình độ</label><select class="input" id="trinh_do" name="trinh_do"><option value="">Mọi trình độ</option>
+    <% h.TRINH_DO.forEach(t => { %><option <%= v.trinh_do === t ? 'selected' : '' %>><%= t %></option><% }) %></select></div>
+  <% fld('gia', 'Học phí (VNĐ)', 'number', 'min="0" step="1000"') %>
+  <% fld('so_cho_toi_da', 'Sĩ số tối đa', 'number', 'min="1"') %>
+  <% fld('lich_hoc', 'Lịch học', 'text', 'placeholder="Tối T2 - T4 - T6, 19:00 - 21:00"') %>
+  <% fld('thoi_luong', 'Thời lượng', 'text', 'placeholder="3 tháng (36 buổi)"') %>
+  <% fld('ngay_khai_giang', 'Ngày khai giảng', 'date') %>
+  <div class="field <%= e('giao_vien_id') ? 'has-error' : '' %>"><label for="giao_vien_id">Giáo viên phụ trách</label><select class="input" id="giao_vien_id" name="giao_vien_id"><option value="">Chọn giáo viên</option>
+    <% teachers.forEach(t => { %><option value="<%= t.id %>" <%= String(v.giao_vien_id) === String(t.id) ? 'selected' : '' %>><%= t.ho_ten %> – <%= t.chuyen_mon %></option><% }) %></select>
+    <% if (e('giao_vien_id')) { %><div class="error-text"><%= e('giao_vien_id') %></div><% } %></div>
+  <div class="full"><% fld('anh', 'Ảnh bìa (đường dẫn, không bắt buộc)') %></div>
+  <div class="field full"><label for="mo_ta">Mô tả</label><textarea class="input" id="mo_ta" name="mo_ta" rows="5"><%= v.mo_ta || '' %></textarea></div>
+</div>

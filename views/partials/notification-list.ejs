@@ -1,0 +1,13 @@
+<div class="row between">
+  <span class="muted"><%= items.filter(i => !i.da_doc).length %> chưa đọc</span>
+  <form method="post" action="<%= base %>/thong-bao/doc-tat-ca"><button class="btn btn-sm btn-outline">Đánh dấu tất cả đã đọc</button></form>
+</div>
+<div class="card card-flush mt">
+  <% items.forEach(n => { %>
+    <a href="<%= base %>/thong-bao/<%= n.id %>" style="display:block;padding:14px 18px;border-bottom:1px solid var(--border);color:var(--text);<%= n.da_doc ? '' : 'background:var(--primary-subtle)' %>">
+      <div class="row between"><b><%= n.tieu_de %></b><span class="small muted"><%= h.datetime(n.ngay_tao) %></span></div>
+      <% if (n.noi_dung) { %><div class="small muted"><%= n.noi_dung %></div><% } %>
+    </a>
+  <% }) %>
+  <% if (!items.length) { %><div class="empty">Chưa có thông báo.</div><% } %>
+</div>

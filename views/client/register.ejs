@@ -1,0 +1,19 @@
+<%- include('../partials/client-start') %>
+<section class="section" style="background:var(--muted)"><div class="container" style="max-width:460px">
+  <% const e = (n) => errors[n]; %>
+  <form class="card" method="post" action="/dang-ky" novalidate>
+    <h2>Đăng ký tài khoản học viên</h2>
+    <p class="small muted">Tài khoản giáo viên do trung tâm cấp, không đăng ký tại đây.</p>
+    <% [['ho_ten', 'Họ và tên', 'text'], ['email', 'Email', 'email'], ['sdt', 'Số điện thoại', 'tel']].forEach(([n, l, t]) => { %>
+      <div class="field <%= e(n) ? 'has-error' : '' %>"><label for="<%= n %>"><%= l %></label><input class="input" id="<%= n %>" name="<%= n %>" type="<%= t %>" value="<%= v[n] || '' %>" required>
+        <% if (e(n)) { %><div class="error-text"><%= e(n) %></div><% } %></div>
+    <% }) %>
+    <div class="field <%= e('mat_khau') ? 'has-error' : '' %>"><label for="mat_khau">Mật khẩu</label><input class="input" id="mat_khau" name="mat_khau" type="password" minlength="8" required>
+      <% if (e('mat_khau')) { %><div class="error-text"><%= e('mat_khau') %></div><% } %></div>
+    <div class="field <%= e('nhap_lai') ? 'has-error' : '' %>"><label for="nhap_lai">Nhập lại mật khẩu</label><input class="input" id="nhap_lai" name="nhap_lai" type="password" required>
+      <% if (e('nhap_lai')) { %><div class="error-text"><%= e('nhap_lai') %></div><% } %></div>
+    <button class="btn btn-block">Đăng ký</button>
+    <p class="small muted mt">Đã có tài khoản? <a href="/dang-nhap">Đăng nhập</a></p>
+  </form>
+</div></section>
+<%- include('../partials/client-end') %>

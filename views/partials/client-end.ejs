@@ -1,0 +1,25 @@
+</main>
+<footer class="footer">
+  <div class="container">
+    <div class="cols">
+      <div>
+        <a class="logo" href="/" style="color:#fff"><span class="mark">E</span>EngEdu</a>
+        <p class="small mt">Trung tâm tiếng Anh với các lộ trình IELTS, TOEIC, Giao tiếp, Business English và Tiếng Anh thiếu nhi.</p>
+      </div>
+      <div><b>Khóa học</b>
+        <% Object.entries(h.LABELS.danhMuc).forEach(([k, v]) => { %><a href="/khoa-hoc?danh_muc=<%= k %>"><%= v %></a><% }) %>
+      </div>
+      <div><b>EngEdu</b>
+        <a href="/gioi-thieu">Giới thiệu</a><a href="/giao-vien">Đội ngũ giáo viên</a><a href="/danh-gia">Đánh giá của học viên</a><a href="/hoi-dap">Hỏi đáp</a>
+      </div>
+      <div><b>Liên hệ</b>
+        <span>Số 1 Đường Demo, Quận Cầu Giấy, Hà Nội</span><br>
+        <span>Hotline: 0900 000 000</span><br>
+        <span>Email: lienhe@engedu.vn</span>
+      </div>
+    </div>
+    <div class="copy">© <%= new Date().getFullYear() %> EngEdu. Bài tập lớn môn Phân tích và thiết kế hệ thống thông tin quản lý.</div>
+  </div>
+</footer>
+</body>
+</html>

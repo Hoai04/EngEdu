@@ -1,0 +1,14 @@
+<%- include('client-start') %>
+<div class="container account">
+  <aside class="side-menu">
+    <div class="who">
+      <span class="avatar"><%= h.initials(currentUser.ho_ten) %></span>
+      <div><b><%= currentUser.ho_ten %></b><div class="small muted"><%= currentUser.email %></div></div>
+    </div>
+    <% [['khoa-hoc', '/tai-khoan/khoa-hoc', 'Khóa học của tôi'], ['thong-tin', '/tai-khoan', 'Thông tin cá nhân'], ['thanh-toan', '/tai-khoan/thanh-toan', 'Lịch sử thanh toán'],
+        ['danh-gia', '/tai-khoan/danh-gia', 'Đánh giá của tôi'], ['thong-bao', '/thong-bao', 'Thông báo'], ['mat-khau', '/tai-khoan/mat-khau', 'Đổi mật khẩu']].forEach(([k, href, text]) => { %>
+      <a href="<%= href %>" class="<%= active === k ? 'active' : '' %>"><%= text %><% if (k === 'thong-bao' && unread) { %> <span class="dot"><%= unread %></span><% } %></a>
+    <% }) %>
+    <form method="post" action="/dang-xuat"><button type="submit" class="muted">Đăng xuất</button></form>
+  </aside>
+  <section>

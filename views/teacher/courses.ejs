@@ -1,0 +1,16 @@
+<%- include('../partials/staff-start') %>
+<div class="card card-flush table-wrap">
+  <table class="table">
+    <thead><tr><th>Khóa học</th><th>Khai giảng</th><th>Lịch học</th><th>Bài giảng</th><th>Học viên</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <% courses.forEach(c => { %>
+        <tr><td><a href="/teacher/khoa-hoc/<%= c.id %>"><b><%= c.ten %></b></a><div class="small muted"><%= h.label('danhMuc', c.danh_muc) %> · <%= c.trinh_do || '' %></div>
+            <% if (c.trang_thai === 'CAN_SUA' && c.ghi_chu_duyet) { %><div class="small" style="color:var(--error)">Admin: <%= c.ghi_chu_duyet %></div><% } %></td>
+          <td><%= h.date(c.ngay_khai_giang) %></td><td class="small"><%= c.lich_hoc || '–' %></td><td><%= c.so_bai %></td><td><%= c.so_hoc_vien %>/<%= c.so_cho_toi_da %></td>
+          <td><%- h.badge('khoaHoc', c.trang_thai) %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% if (!courses.length) { %><div class="empty">Bạn chưa được phân công khóa học nào.</div><% } %>
+</div>
+<%- include('../partials/staff-end') %>

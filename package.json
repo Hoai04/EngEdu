@@ -1,0 +1,22 @@
+{
+  "name": "engedu",
+  "version": "1.1.0",
+  "description": "Hệ thống đăng ký khóa học tiếng Anh EngEdu – Node.js, Express 5, EJS, SQLite",
+  "main": "app.js",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning app.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch app.js",
+    "seed": "node --disable-warning=ExperimentalWarning seed.js",
+    "test": "node --disable-warning=ExperimentalWarning scripts/test.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1"
+  }
+}

@@ -1,0 +1,54 @@
+<%- include('../partials/staff-start', { crumbs: [['/admin/giao-vien', 'Giáo viên']] }) %>
+<nav class="tabs">
+  <a href="?tab=thong-tin" class="<%= tab === 'thong-tin' ? 'active' : '' %>">Thông tin</a>
+  <a href="?tab=chinh-sua" class="<%= tab === 'chinh-sua' ? 'active' : '' %>">Chỉnh sửa</a>
+</nav>
+<div class="detail-layout">
+  <div class="stack">
+    <% if (tab === 'thong-tin') { %>
+      <div class="card">
+        <div class="row between"><div class="row"><span class="avatar avatar-lg"><%= h.initials(teacher.ho_ten) %></span><div><h3 style="margin:0"><%= teacher.ho_ten %></h3><div class="muted small"><%= teacher.chuyen_mon %></div></div></div><%- h.badge('taiKhoan', teacher.trang_thai) %></div>
+        <dl class="info mt">
+          <dt>Email đăng nhập</dt><dd><%= teacher.email %></dd>
+          <dt>Số điện thoại</dt><dd><%= teacher.sdt || '–' %></dd>
+          <dt>Ngày sinh</dt><dd><%= teacher.ngay_sinh ? `${h.date(teacher.ngay_sinh)} (${h.age(teacher.ngay_sinh)} tuổi)` : '–' %></dd>
+          <dt>Giới tính</dt><dd><%= h.label('gioiTinh', teacher.gioi_tinh) || '–' %></dd>
+          <dt>Học vị</dt><dd><%= teacher.hoc_vi || '–' %></dd>
+          <dt>Chứng chỉ</dt><dd><%= teacher.chung_chi || '–' %></dd>
+          <dt>Kinh nghiệm</dt><dd><%= teacher.kinh_nghiem_nam %> năm</dd>
+          <dt>Ngày vào làm</dt><dd><%= h.date(teacher.ngay_vao_lam) || '–' %></dd>
+          <dt>Ngày cấp tài khoản</dt><dd><%= h.date(teacher.ngay_tao) %></dd>
+          <dt>Giới thiệu</dt><dd style="white-space:pre-line"><%= teacher.gioi_thieu || '–' %></dd>
+        </dl>
+      </div>
+      <div class="card card-flush table-wrap">
+        <h3 style="padding:16px 16px 0">Khóa học phụ trách</h3>
+        <table class="table"><thead><tr><th>Khóa học</th><th>Khai giảng</th><th>Sĩ số</th><th>Trạng thái</th></tr></thead>
+          <tbody><% courses.forEach(c => { %><tr><td><a href="/admin/khoa-hoc/<%= c.id %>"><%= c.ten %></a></td><td><%= h.date(c.ngay_khai_giang) %></td>
+            <td><%= c.cho_da_dung %>/<%= c.so_cho_toi_da %></td><td><%- h.badge('khoaHoc', c.trang_thai) %></td></tr><% }) %></tbody></table>
+        <% if (!courses.length) { %><div class="empty">Chưa được phân công.</div><% } %>
+      </div>
+    <% } else { %>
+      <form class="card" method="post" action="/admin/giao-vien/<%= teacher.id %>" novalidate>
+        <%- include('../partials/teacher-fields', { isNew: false }) %>
+        <button class="btn">Lưu hồ sơ</button>
+      </form>
+    <% } %>
+  </div>
+  <aside class="stack">
+    <div class="card">
+      <h3>Tài khoản</h3>
+      <% if (teacher.trang_thai === 'HOAT_DONG') { %>
+        <form method="post" action="/admin/giao-vien/<%= teacher.id %>/khoa" onsubmit="return confirm('Khóa tài khoản? Giáo viên sẽ bị đăng xuất ngay.')"><button class="btn btn-outline btn-block">Khóa tài khoản</button></form>
+      <% } else { %>
+        <form method="post" action="/admin/giao-vien/<%= teacher.id %>/mo-khoa"><button class="btn btn-block">Mở khóa tài khoản</button></form>
+      <% } %>
+    </div>
+    <form class="card" method="post" action="/admin/giao-vien/<%= teacher.id %>/dat-lai-mat-khau">
+      <h3>Đặt lại mật khẩu</h3>
+      <div class="field"><label for="mat_khau_moi">Mật khẩu mới</label><input class="input" id="mat_khau_moi" name="mat_khau_moi" minlength="8" required autocomplete="off"></div>
+      <button class="btn btn-block">Đặt lại</button>
+    </form>
+  </aside>
+</div>
+<%- include('../partials/staff-end') %>

@@ -1,0 +1,36 @@
+<%- include('../partials/staff-start') %>
+<div class="chips mb">
+  <% [['tat-ca', 'Cần xử lý'], ['moi', 'Mới'], ['chuyen-gv', 'Đã chuyển giáo viên'], ['da-de-xuat', 'Giáo viên đã đề xuất'], ['hoan-tat', 'Hoàn tất']].forEach(([k, l]) => { %>
+    <a class="chip <%= tab === k ? 'active' : '' %>" href="?tab=<%= k %>"><%= l %></a>
+  <% }) %>
+</div>
+<div class="card card-flush table-wrap">
+  <table class="table">
+    <thead><tr><th>Khách hàng</th><th>Nội dung</th><th>Trạng thái</th><th>Xử lý</th></tr></thead>
+    <tbody>
+      <% items.forEach(y => { %>
+        <tr>
+          <td><b><%= y.ho_ten %></b><div class="small muted"><%= y.sdt %><br><%= y.email || '' %><br><%= h.datetime(y.ngay_tao) %></div></td>
+          <td style="max-width:360px"><div class="small muted">Khóa quan tâm: <%= y.khoa_hoc_ten || 'Chưa chọn' %></div><%= y.noi_dung || '' %>
+            <% if (y.ket_qua_gv) { %><div class="reply small"><b><%= y.giao_vien_ten %> đề xuất:</b> <%= y.ket_qua_gv %></div><% } %>
+            <% if (y.ket_qua) { %><div class="small mt"><b>Kết quả:</b> <%= y.ket_qua %></div><% } %></td>
+          <td><%- h.badge('tuVan', y.trang_thai) %><% if (y.giao_vien_ten && y.trang_thai === 'CHUYEN_GV') { %><div class="small muted"><%= y.giao_vien_ten %></div><% } %></td>
+          <td>
+            <% if (y.trang_thai !== 'HOAN_TAT') { %>
+              <% if (['MOI', 'CHUYEN_GV'].includes(y.trang_thai)) { %>
+                <form class="row" style="gap:6px" method="post" action="/admin/tu-van/<%= y.id %>/chuyen">
+                  <select class="input" name="giao_vien_id" style="width:auto;padding:6px 8px" required><option value="">Chọn giáo viên</option>
+                    <% teachers.forEach(t => { %><option value="<%= t.id %>" <%= y.giao_vien_id === t.id ? 'selected' : '' %>><%= t.ho_ten %> – <%= t.chuyen_mon %></option><% }) %></select>
+                  <button class="btn btn-sm">Chuyển</button></form>
+              <% } %>
+              <details class="small mt"><summary class="btn-link">Ghi kết quả và hoàn tất</summary>
+                <form class="cell-form mt" method="post" action="/admin/tu-van/<%= y.id %>/hoan-tat"><textarea class="input" name="ket_qua" rows="2" placeholder="Kết quả tư vấn" required></textarea><button class="btn btn-sm">Hoàn tất</button></form></details>
+            <% } else { %>–<% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% if (!items.length) { %><div class="empty">Không có yêu cầu nào.</div><% } %>
+</div>
+<%- include('../partials/staff-end') %>

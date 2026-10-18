@@ -1,0 +1,26 @@
+<%- include('../partials/staff-start') %>
+<div class="stat-cards">
+  <div class="stat-card"><div class="label">Doanh thu</div><div class="value"><%= h.money(stats.doanh_thu) %></div><a class="small" href="/admin/thong-ke">Thống kê</a></div>
+  <div class="stat-card"><div class="label">Lượt đăng ký đã kích hoạt</div><div class="value"><%= stats.dang_ky %></div><a class="small" href="/admin/thanh-toan?tab=da-thanh-toan">Xem</a></div>
+  <div class="stat-card"><div class="label">Học viên</div><div class="value"><%= stats.hoc_vien %></div><a class="small" href="/admin/hoc-vien">Quản lý</a></div>
+  <div class="stat-card"><div class="label">Giáo viên</div><div class="value"><%= stats.giao_vien %></div><a class="small" href="/admin/giao-vien">Quản lý</a></div>
+  <div class="stat-card"><div class="label">Khóa học đang mở</div><div class="value"><%= stats.khoa_hoc %></div><a class="small" href="/admin/khoa-hoc?tab=dang-mo">Quản lý</a></div>
+  <div class="stat-card"><div class="label">Điểm đánh giá TB</div><div class="value"><%= stats.diem_tb || '–' %>★</div><a class="small" href="/admin/danh-gia?tab=hien-thi">Xem</a></div>
+</div>
+<h3>Việc cần xử lý</h3>
+<div class="stat-cards">
+  <div class="stat-card" style="border-top-color:var(--primary)"><div class="label">Thanh toán chờ xác nhận</div><div class="value"><%= counts.thanhToan %></div><a class="small" href="/admin/thanh-toan">Xử lý →</a></div>
+  <div class="stat-card" style="border-top-color:var(--primary)"><div class="label">Đánh giá chờ duyệt</div><div class="value"><%= counts.danhGia %></div><a class="small" href="/admin/danh-gia">Xử lý →</a></div>
+  <div class="stat-card" style="border-top-color:var(--primary)"><div class="label">Khóa học chờ duyệt</div><div class="value"><%= counts.khoaHoc %></div><a class="small" href="/admin/khoa-hoc?tab=cho-duyet">Xử lý →</a></div>
+  <div class="stat-card" style="border-top-color:var(--primary)"><div class="label">Yêu cầu tư vấn cần xử lý</div><div class="value"><%= counts.tuVan %></div><a class="small" href="/admin/tu-van">Xử lý →</a></div>
+</div>
+<div class="card">
+  <h3>Doanh thu 6 tháng gần nhất</h3>
+  <% const max = Math.max(1, ...revenue.map(r => r.tong)); %>
+  <div class="bars">
+    <% revenue.forEach(r => { %>
+      <div class="col"><span><%= (r.tong / 1e6).toFixed(1) %> tr</span><div class="bar" style="height:<%= Math.round(170 * r.tong / max) %>px" title="<%= h.money(r.tong) %>"></div><span class="muted"><%= r.thang %></span></div>
+    <% }) %>
+  </div>
+</div>
+<%- include('../partials/staff-end') %>

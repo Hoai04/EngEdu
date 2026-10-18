@@ -1,0 +1,24 @@
+<%- include('../partials/client-start') %>
+<div class="page-head"><div class="container">
+  <div class="crumb"><a href="/">Trang chủ</a> › Đánh giá</div>
+  <h1>Đánh giá của học viên</h1>
+  <p class="muted">Điểm trung bình <b><%= summary.diem || '–' %>★</b> từ <%= summary.n %> đánh giá đã được kiểm duyệt</p>
+  <div class="chips mt">
+    <a class="chip <%= !sao ? 'active' : '' %>" href="/danh-gia">Tất cả</a>
+    <% [5, 4, 3, 2, 1].forEach(s => { %><a class="chip <%= sao === s ? 'active' : '' %>" href="/danh-gia?sao=<%= s %>"><%= s %> sao</a><% }) %>
+  </div>
+</div></div>
+<section class="section"><div class="container grid grid-2">
+  <% reviews.forEach(r => { %>
+    <div class="card">
+      <div class="row between"><div class="row" style="gap:10px"><span class="avatar"><%= h.initials(r.ho_ten) %></span>
+        <div><b><%= r.ho_ten %></b><div class="small muted"><a href="/khoa-hoc/<%= r.khoa_hoc_id %>"><%= r.khoa_hoc_ten %></a> · <%= r.giao_vien_ten || '' %></div></div></div>
+        <span class="rating"><%= h.stars(r.so_sao) %></span></div>
+      <% if (r.noi_dung) { %><p class="mt"><%= r.noi_dung %></p><% } %>
+      <% if (r.phan_hoi_gv) { %><div class="reply small"><b>Giáo viên phản hồi:</b> <%= r.phan_hoi_gv %></div><% } %>
+      <div class="small muted mt"><%= h.date(r.ngay_tao) %></div>
+    </div>
+  <% }) %>
+  <% if (!reviews.length) { %><div class="card empty">Chưa có đánh giá.</div><% } %>
+</div></section>
+<%- include('../partials/client-end') %>

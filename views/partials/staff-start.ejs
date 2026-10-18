@@ -1,0 +1,41 @@
+<%- include('head') %>
+<%
+  const isAdmin = role === 'admin';
+  const base = isAdmin ? '/admin' : '/teacher';
+  const menu = isAdmin ? [
+    ['TỔNG QUAN'], ['/admin', 'Dashboard'], ['/admin/thong-ke', 'Thống kê'],
+    ['NGHIỆP VỤ'], ['/admin/thanh-toan', 'Thanh toán', counts.thanhToan], ['/admin/danh-gia', 'Đánh giá', counts.danhGia], ['/admin/tu-van', 'Yêu cầu tư vấn', counts.tuVan],
+    ['QUẢN LÝ'], ['/admin/khoa-hoc', 'Khóa học', counts.khoaHoc], ['/admin/giao-vien', 'Giáo viên'], ['/admin/hoc-vien', 'Học viên'],
+    ['/admin/thong-bao', 'Thông báo', unread], ['/', 'Xem website'],
+  ] : [
+    ['TỔNG QUAN'], ['/teacher', 'Dashboard'],
+    ['GIẢNG DẠY'], ['/teacher/khoa-hoc', 'Khóa học của tôi'], ['/teacher/hoc-vien', 'Học viên'], ['/teacher/danh-gia', 'Đánh giá', counts.danhGia], ['/teacher/tu-van', 'Đánh giá trình độ', counts.tuVan],
+    ['CÁ NHÂN'], ['/teacher/ho-so', 'Hồ sơ'], ['/teacher/mat-khau', 'Đổi mật khẩu'], ['/teacher/thong-bao', 'Thông báo', unread], ['/', 'Xem website'],
+  ];
+  const full = path.replace(/\/$/, '') || '/';
+  const isActive = (href) => href === base ? full === base : (href !== '/' && full.startsWith(href));
+  const today = new Date(); const days = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+%>
+<body>
+<div class="staff">
+  <aside class="sidebar">
+    <a class="logo" href="<%= base %>"><span class="mark">E</span>EngEdu</a>
+    <div class="sub"><%= isAdmin ? 'QUẢN TRỊ' : 'GIÁO VIÊN' %></div>
+    <% menu.forEach(m => { if (m.length === 1) { %><div class="group"><%= m[0] %></div><% } else { %>
+      <a class="item <%= isActive(m[0]) ? 'active' : '' %>" href="<%= m[0] %>"><span><%= m[1] %></span><% if (m[2]) { %><span class="dot"><%= m[2] %></span><% } %></a>
+    <% } }) %>
+    <div class="user">
+      <span class="avatar"><%= h.initials(currentUser.ho_ten) %></span>
+      <div class="name"><%= currentUser.ho_ten %><small><%= currentUser.email %></small></div>
+      <form method="post" action="/dang-xuat"><button class="btn btn-sm btn-dark" style="border-color:rgba(255,255,255,.3)">Thoát</button></form>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="main-head">
+      <div>
+        <% if (typeof crumbs !== 'undefined' && crumbs) { %><div class="crumb"><% crumbs.forEach(([href, text], i) => { %><a href="<%= href %>"><%= text %></a> › <% }) %></div><% } %>
+        <h1 style="font-size:26px;margin:0"><%= title %></h1>
+      </div>
+      <span class="small muted"><%= days[today.getDay()] %>, <%= h.date(today) %></span>
+    </div>
+    <%- include('flash') %>

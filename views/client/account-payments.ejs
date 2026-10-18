@@ -1,0 +1,21 @@
+<%- include('../partials/account-start', { active: 'thanh-toan' }) %>
+<h2>Lịch sử thanh toán</h2>
+<div class="card card-flush mt table-wrap">
+  <table class="table">
+    <thead><tr><th>Mã đơn</th><th>Khóa học</th><th>Số tiền</th><th>Ngày tạo</th><th>Ngày xác nhận</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <% items.forEach(t => { %>
+        <tr>
+          <td><a href="/thanh-toan/<%= t.ma_don %>"><b><%= t.ma_don %></b></a></td>
+          <td><%= t.khoa_hoc_ten %></td>
+          <td><%= h.money(t.so_tien) %></td>
+          <td><%= h.datetime(t.ngay_tao) %></td>
+          <td><%= h.datetime(t.ngay_xac_nhan) || '–' %></td>
+          <td><%- h.badge('thanhToan', t.trang_thai) %><% if (t.trang_thai === 'TU_CHOI' && t.ly_do_tu_choi) { %><div class="small muted"><%= t.ly_do_tu_choi %></div><% } %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% if (!items.length) { %><div class="empty">Chưa có giao dịch.</div><% } %>
+</div>
+<%- include('../partials/account-end') %>

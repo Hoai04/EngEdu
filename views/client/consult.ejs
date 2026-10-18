@@ -1,0 +1,30 @@
+<%- include('../partials/client-start') %>
+<div class="page-head"><div class="container"><div class="crumb"><a href="/">Trang chủ</a> › Tư vấn</div><h1>Đăng ký tư vấn và kiểm tra trình độ</h1></div></div>
+<section class="section"><div class="container" style="max-width:720px">
+  <% if (done) { %>
+    <div class="card stack" style="text-align:center">
+      <h2>Cảm ơn bạn!</h2>
+      <p class="muted">Trung tâm đã nhận yêu cầu và sẽ liên hệ trong thời gian sớm nhất. Nếu cần, giáo viên sẽ kiểm tra trình độ và đề xuất khóa học phù hợp.</p>
+      <a class="btn" href="/khoa-hoc" style="align-self:center">Xem các khóa học</a>
+    </div>
+  <% } else { const e = (n) => errors[n]; %>
+    <form class="card" method="post" action="/tu-van" novalidate>
+      <div class="form-grid">
+        <div class="field <%= e('ho_ten') ? 'has-error' : '' %>"><label for="ho_ten">Họ và tên</label><input class="input" id="ho_ten" name="ho_ten" value="<%= v.ho_ten %>" required>
+          <% if (e('ho_ten')) { %><div class="error-text"><%= e('ho_ten') %></div><% } %></div>
+        <div class="field <%= e('sdt') ? 'has-error' : '' %>"><label for="sdt">Số điện thoại</label><input class="input" id="sdt" name="sdt" value="<%= v.sdt %>" required>
+          <% if (e('sdt')) { %><div class="error-text"><%= e('sdt') %></div><% } %></div>
+        <div class="field full <%= e('email') ? 'has-error' : '' %>"><label for="email">Email</label><input class="input" id="email" name="email" type="email" value="<%= v.email %>">
+          <% if (e('email')) { %><div class="error-text"><%= e('email') %></div><% } %></div>
+        <div class="field full <%= e('khoa_hoc_id') ? 'has-error' : '' %>"><label for="khoa_hoc_id">Khóa học quan tâm</label>
+          <select class="input" id="khoa_hoc_id" name="khoa_hoc_id"><option value="">Chưa chọn</option>
+            <% courses.forEach(c => { %><option value="<%= c.id %>" <%= String(v.khoa_hoc_id) === String(c.id) ? 'selected' : '' %>><%= c.ten %></option><% }) %>
+          </select>
+          <% if (e('khoa_hoc_id')) { %><div class="error-text"><%= e('khoa_hoc_id') %></div><% } %></div>
+        <div class="field full"><label for="noi_dung">Lời nhắn</label><textarea class="input" id="noi_dung" name="noi_dung" maxlength="1000" placeholder="Mục tiêu học, thời gian có thể học..."><%= v.noi_dung %></textarea></div>
+      </div>
+      <button class="btn">Gửi yêu cầu</button>
+    </form>
+  <% } %>
+</div></section>
+<%- include('../partials/client-end') %>

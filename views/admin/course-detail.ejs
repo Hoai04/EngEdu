@@ -1,0 +1,50 @@
+<%- include('../partials/staff-start', { crumbs: [['/admin/khoa-hoc', 'Khóa học']] }) %>
+<div class="row between mb">
+  <div class="row"><%- h.badge('khoaHoc', course.trang_thai) %><span class="small muted">GV <%= course.giao_vien_ten || '–' %> · <%= course.so_hoc_vien %>/<%= course.so_cho_toi_da %> học viên · <%= course.so_bai %> bài giảng</span></div>
+  <div class="actions">
+    <% if (course.trang_thai === 'MO_DANG_KY' || course.trang_thai === 'AN') { %><a class="btn btn-sm btn-outline" href="/khoa-hoc/<%= course.id %>" target="_blank">Xem trên website</a><% } %>
+    <% if (course.trang_thai === 'MO_DANG_KY') { %><form method="post" action="/admin/khoa-hoc/<%= course.id %>/an"><button class="btn btn-sm btn-outline">Ẩn / đóng đăng ký</button></form><% } %>
+    <% if (course.trang_thai === 'AN') { %><form method="post" action="/admin/khoa-hoc/<%= course.id %>/mo-lai"><button class="btn btn-sm">Mở lại</button></form><% } %>
+    <% if (Number(course.tong_dang_ky) === 0 && ['NHAP', 'AN', 'CAN_SUA'].includes(course.trang_thai)) { %>
+      <form method="post" action="/admin/khoa-hoc/<%= course.id %>/xoa" onsubmit="return confirm('Xóa khóa học và toàn bộ bài giảng?')"><button class="btn btn-sm btn-outline">Xóa</button></form><% } %>
+  </div>
+</div>
+<% if (course.trang_thai === 'CHO_DUYET') { %>
+  <div class="card mb" style="border-left:3px solid var(--primary)">
+    <h3>Duyệt nội dung khóa học</h3>
+    <p class="small muted">Giáo viên đã gửi <%= course.so_bai %> bài giảng. Xem tab Nội dung trước khi duyệt.</p>
+    <div class="row" style="align-items:flex-start">
+      <form method="post" action="/admin/khoa-hoc/<%= course.id %>/duyet"><button class="btn">Duyệt và mở đăng ký</button></form>
+      <form method="post" action="/admin/khoa-hoc/<%= course.id %>/yeu-cau-sua" class="row" style="flex:1;gap:8px">
+        <input class="input" style="flex:1;min-width:240px" name="ghi_chu_duyet" placeholder="Nội dung cần chỉnh sửa" required><button class="btn btn-outline">Yêu cầu chỉnh sửa</button></form>
+    </div>
+  </div>
+<% } %>
+<% if (course.trang_thai === 'CAN_SUA' && course.ghi_chu_duyet) { %><div class="flash">Đã yêu cầu chỉnh sửa: <%= course.ghi_chu_duyet %></div><% } %>
+<nav class="tabs">
+  <a href="?tab=noi-dung" class="<%= tab === 'noi-dung' ? 'active' : '' %>">Nội dung (<%= lessons.length %>)</a>
+  <a href="?tab=chinh-sua" class="<%= tab === 'chinh-sua' ? 'active' : '' %>">Chỉnh sửa / phân công</a>
+  <a href="?tab=hoc-vien" class="<%= tab === 'hoc-vien' ? 'active' : '' %>">Đăng ký (<%= course.tong_dang_ky %>)</a>
+</nav>
+<% if (tab === 'noi-dung') { %>
+  <div class="card card-flush lesson-list">
+    <% let chap = null; lessons.forEach(l => { if (l.chuong !== chap) { chap = l.chuong; %><div class="chapter"><%= chap || 'Bài giảng' %></div><% } %>
+      <div class="lesson"><span><%= l.thu_tu %>. <%= l.tieu_de %></span><span class="small">
+        <% if (l.video_url) { %><a href="<%= l.video_url %>" target="_blank" rel="noopener">Video</a><% } %> <% if (l.tai_lieu_url) { %><a href="<%= l.tai_lieu_url %>" target="_blank" rel="noopener">Tài liệu</a><% } %></span></div>
+    <% }) %>
+    <% if (!lessons.length) { %><div class="empty">Giáo viên chưa soạn bài giảng.</div><% } %>
+  </div>
+<% } else if (tab === 'chinh-sua') { %>
+  <form class="card" method="post" action="/admin/khoa-hoc/<%= course.id %>" novalidate style="max-width:900px">
+    <%- include('../partials/course-fields') %>
+    <button class="btn">Lưu thay đổi</button>
+  </form>
+<% } else { %>
+  <div class="card card-flush table-wrap">
+    <table class="table"><thead><tr><th>Học viên</th><th>Ngày đăng ký</th><th>Trình độ</th><th>Trạng thái</th></tr></thead>
+      <tbody><% students.forEach(s => { %><tr><td><a href="/admin/hoc-vien/<%= s.hoc_vien_id %>"><%= s.ho_ten %></a><div class="small muted"><%= s.email %></div></td>
+        <td><%= h.datetime(s.ngay_dang_ky) %></td><td><%= s.trinh_do_hien_tai || '–' %></td><td><%- h.badge('dangKy', s.trang_thai) %></td></tr><% }) %></tbody></table>
+    <% if (!students.length) { %><div class="empty">Chưa có đăng ký.</div><% } %>
+  </div>
+<% } %>
+<%- include('../partials/staff-end') %>

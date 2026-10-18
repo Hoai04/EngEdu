@@ -1,0 +1,28 @@
+<%- include('../partials/client-start') %>
+<% const e = (n) => errors[n]; %>
+<section class="section"><div class="container" style="max-width:640px">
+  <div class="crumb"><a href="/hoc/<%= dk.khoa_hoc_id %>"><%= dk.ten %></a> › Đánh giá</div>
+  <form class="card" method="post" action="/hoc/<%= dk.khoa_hoc_id %>/danh-gia" novalidate>
+    <h2>Đánh giá khóa học</h2>
+    <p class="small muted"><%= dk.ten %> · <%= dk.giao_vien_ten || '' %></p>
+    <% if (review) { %>
+      <div class="note small mb">Trạng thái: <b><%= h.label('danhGia', review.trang_thai) %></b><% if (review.ly_do_an) { %> – Lý do ẩn: <%= review.ly_do_an %><% } %></div>
+      <% if (review.phan_hoi_gv) { %><div class="reply small mb"><b>Giáo viên:</b> <%= review.phan_hoi_gv %></div><% } %>
+    <% } %>
+    <div class="field <%= e('so_sao') ? 'has-error' : '' %>"><label>Số sao</label>
+      <div class="star-input">
+        <% [5, 4, 3, 2, 1].forEach(s => { %><input type="radio" id="s<%= s %>" name="so_sao" value="<%= s %>" <%= Number(v.so_sao) === s ? 'checked' : '' %>><label for="s<%= s %>" title="<%= s %> sao">★</label><% }) %>
+      </div>
+      <% if (e('so_sao')) { %><div class="error-text"><%= e('so_sao') %></div><% } %></div>
+    <div class="field <%= e('noi_dung') ? 'has-error' : '' %>"><label for="noi_dung">Nhận xét (không bắt buộc)</label>
+      <textarea class="input" id="noi_dung" name="noi_dung" maxlength="1000" oninput="document.getElementById('cnt').textContent=this.value.length"><%= v.noi_dung || '' %></textarea>
+      <div class="small muted" style="text-align:right"><span id="cnt"><%= (v.noi_dung || '').length %></span>/1000</div>
+      <% if (e('noi_dung')) { %><div class="error-text"><%= e('noi_dung') %></div><% } %></div>
+    <% if (review) { %><p class="small muted">Sửa đánh giá sẽ đưa đánh giá về "Chờ duyệt" và xóa phản hồi cũ của giáo viên.</p><% } %>
+    <button class="btn"><%= review ? 'Cập nhật đánh giá' : 'Gửi đánh giá' %></button>
+  </form>
+  <% if (review) { %>
+    <form method="post" action="/hoc/<%= dk.khoa_hoc_id %>/danh-gia/xoa" class="mt" onsubmit="return confirm('Xóa đánh giá này?')"><button class="btn btn-sm btn-outline">Xóa đánh giá</button></form>
+  <% } %>
+</div></section>
+<%- include('../partials/client-end') %>

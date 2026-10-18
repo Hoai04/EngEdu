@@ -1,0 +1,55 @@
+<%- include('../partials/staff-start', { crumbs: [['/teacher/khoa-hoc', 'Khóa học của tôi']] }) %>
+<% const e = (n) => errors[n]; const canSubmit = ['NHAP', 'CAN_SUA'].includes(course.trang_thai); %>
+<div class="row between mb">
+  <div class="row"><%- h.badge('khoaHoc', course.trang_thai) %><span class="small muted"><%= course.lich_hoc || '' %> · Khai giảng <%= h.date(course.ngay_khai_giang) %></span></div>
+  <% if (canSubmit) { %><form method="post" action="/teacher/khoa-hoc/<%= course.id %>/gui-duyet"><button class="btn">Gửi duyệt nội dung</button></form><% } %>
+</div>
+<% if (course.trang_thai === 'CAN_SUA' && course.ghi_chu_duyet) { %><div class="flash flash-error"><b>Admin yêu cầu chỉnh sửa:</b> <%= course.ghi_chu_duyet %></div><% } %>
+<nav class="tabs">
+  <a href="?tab=bai-giang" class="<%= tab === 'bai-giang' ? 'active' : '' %>">Bài giảng (<%= lessons.length %>)</a>
+  <a href="?tab=hoc-vien" class="<%= tab === 'hoc-vien' ? 'active' : '' %>">Học viên</a>
+</nav>
+<% if (tab === 'bai-giang') { %>
+  <div class="detail-layout">
+    <div class="card card-flush table-wrap">
+      <table class="table">
+        <thead><tr><th>#</th><th>Chương / Bài</th><th>Video</th><th>Tài liệu</th><th></th></tr></thead>
+        <tbody>
+          <% lessons.forEach(l => { %>
+            <tr><td><%= l.thu_tu %></td><td><div class="small muted"><%= l.chuong || '' %></div><b><%= l.tieu_de %></b></td>
+              <td><%= l.video_url ? '✓' : '–' %></td><td><%= l.tai_lieu_url ? '✓' : '–' %></td>
+              <td><div class="actions"><a class="btn btn-sm btn-outline" href="?sua=<%= l.id %>">Sửa</a>
+                <form method="post" action="/teacher/khoa-hoc/<%= course.id %>/bai-giang/<%= l.id %>/xoa" onsubmit="return confirm('Xóa bài giảng này?')"><button class="btn btn-sm btn-outline">Xóa</button></form></div></td></tr>
+          <% }) %>
+        </tbody>
+      </table>
+      <% if (!lessons.length) { %><div class="empty">Chưa có bài giảng. Thêm ít nhất 1 bài để gửi duyệt.</div><% } %>
+    </div>
+    <form class="card" method="post" action="/teacher/khoa-hoc/<%= course.id %>/bai-giang<%= editing ? '/' + editing.id : '' %>" novalidate>
+      <h3><%= editing ? 'Sửa bài giảng' : 'Thêm bài giảng' %></h3>
+      <div class="field"><label for="chuong">Chương</label><input class="input" id="chuong" name="chuong" value="<%= v.chuong || '' %>"></div>
+      <div class="field <%= e('tieu_de') ? 'has-error' : '' %>"><label for="tieu_de">Tiêu đề bài</label><input class="input" id="tieu_de" name="tieu_de" value="<%= v.tieu_de || '' %>">
+        <% if (e('tieu_de')) { %><div class="error-text"><%= e('tieu_de') %></div><% } %></div>
+      <div class="field <%= e('video_url') ? 'has-error' : '' %>"><label for="video_url">Đường dẫn video</label><input class="input" id="video_url" name="video_url" value="<%= v.video_url || '' %>" placeholder="https://www.youtube.com/watch?v=...">
+        <% if (e('video_url')) { %><div class="error-text"><%= e('video_url') %></div><% } %></div>
+      <div class="field <%= e('tai_lieu_url') ? 'has-error' : '' %>"><label for="tai_lieu_url">Đường dẫn tài liệu</label><input class="input" id="tai_lieu_url" name="tai_lieu_url" value="<%= v.tai_lieu_url || '' %>" placeholder="https://">
+        <% if (e('tai_lieu_url')) { %><div class="error-text"><%= e('tai_lieu_url') %></div><% } %></div>
+      <div class="field"><label for="thu_tu">Thứ tự</label><input class="input" id="thu_tu" name="thu_tu" type="number" value="<%= v.thu_tu || 0 %>"></div>
+      <div class="row"><button class="btn"><%= editing ? 'Lưu' : 'Thêm bài' %></button><% if (editing) { %><a class="btn btn-outline" href="/teacher/khoa-hoc/<%= course.id %>">Hủy</a><% } %></div>
+    </form>
+  </div>
+<% } else { %>
+  <div class="card card-flush table-wrap">
+    <table class="table">
+      <thead><tr><th>Học viên</th><th>Liên hệ</th><th>Trình độ khi đăng ký</th><th>Mục tiêu</th><th>Tiến độ</th></tr></thead>
+      <tbody>
+        <% students.forEach(s => { %>
+          <tr><td><a href="/teacher/hoc-vien/<%= s.hoc_vien_id %>"><b><%= s.ho_ten %></b></a></td><td class="small"><%= s.email %><br><%= s.sdt %></td>
+            <td><%= s.trinh_do_hien_tai || '–' %></td><td class="small"><%= s.muc_tieu || '–' %></td><td><%= s.da_hoc %>/<%= lessons.length %> bài</td></tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% if (!students.length) { %><div class="empty">Chưa có học viên đã kích hoạt.</div><% } %>
+  </div>
+<% } %>
+<%- include('../partials/staff-end') %>

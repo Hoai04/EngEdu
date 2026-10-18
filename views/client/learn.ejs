@@ -1,0 +1,29 @@
+<%- include('../partials/client-start') %>
+<div class="container">
+  <div class="row between" style="padding-top:24px">
+    <div><div class="crumb"><a href="/tai-khoan/khoa-hoc">Khóa học của tôi</a> › <%= dk.ten %></div><h2 style="margin:0"><%= dk.ten %></h2><div class="small muted">Giáo viên: <%= dk.giao_vien_ten || '–' %></div></div>
+    <div style="min-width:220px"><div class="small">Hoàn thành <%= done %>/<%= lessons.length %> bài</div><div class="progress"><i style="width:<%= lessons.length ? Math.round(100 * done / lessons.length) : 0 %>%"></i></div>
+      <a class="btn btn-sm btn-outline mt" href="/hoc/<%= dk.khoa_hoc_id %>/danh-gia">Đánh giá khóa học</a></div>
+  </div>
+  <div class="learn">
+    <aside class="card card-flush lesson-list">
+      <% let chap = null; lessons.forEach(l => { if (l.chuong !== chap) { chap = l.chuong; %><div class="chapter"><%= chap || 'Bài giảng' %></div><% } %>
+        <a class="lesson <%= current && current.id === l.id ? 'active' : '' %>" href="?bai=<%= l.id %>"><span><%= l.tieu_de %></span><% if (Number(l.da_hoc)) { %><span class="badge badge-success">Đã học</span><% } %></a>
+      <% }) %>
+      <% if (!lessons.length) { %><div class="empty">Khóa học chưa có bài giảng.</div><% } %>
+    </aside>
+    <div>
+      <% if (current) { %>
+        <div class="video"><% if (embed) { %><iframe src="<%= embed %>" title="<%= current.tieu_de %>" allowfullscreen></iframe><% } else if (current.video_url) { %><a href="<%= current.video_url %>" target="_blank" rel="noopener" style="color:#fff">Mở video bài học ↗</a><% } else { %>Bài học không có video<% } %></div>
+        <div class="card mt">
+          <div class="small muted"><%= current.chuong || '' %></div>
+          <h2><%= current.tieu_de %></h2>
+          <% if (current.tai_lieu_url) { %><p><a href="<%= current.tai_lieu_url %>" target="_blank" rel="noopener">Tài liệu bài học ↗</a></p><% } %>
+          <% if (Number(current.da_hoc)) { %><span class="badge badge-success">Đã hoàn thành</span>
+          <% } else { %><form method="post" action="/hoc/<%= dk.khoa_hoc_id %>/hoan-thanh/<%= current.id %>"><button class="btn">Đánh dấu hoàn thành</button></form><% } %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/client-end') %>

@@ -1,0 +1,19 @@
+<% const e = (n) => errors[n]; const fld = (n, l, type = 'text', extra = '') => { %>
+  <div class="field <%= e(n) ? 'has-error' : '' %>"><label for="<%= n %>"><%= l %></label><input class="input" id="<%= n %>" name="<%= n %>" type="<%= type %>" value="<%= v[n] ?? '' %>" <%- extra %>>
+    <% if (e(n)) { %><div class="error-text"><%= e(n) %></div><% } %></div>
+<% }; %>
+<div class="form-grid">
+  <% fld('ho_ten', 'Họ và tên') %>
+  <% fld('email', 'Email đăng nhập', 'email') %>
+  <% fld('sdt', 'Số điện thoại', 'tel') %>
+  <% fld('ngay_sinh', 'Ngày sinh', 'date') %>
+  <div class="field"><label for="gioi_tinh">Giới tính</label><select class="input" id="gioi_tinh" name="gioi_tinh"><option value="">Chưa chọn</option>
+    <% Object.entries(h.LABELS.gioiTinh).forEach(([k, l]) => { %><option value="<%= k %>" <%= v.gioi_tinh === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+  <% fld('chuyen_mon', 'Chuyên môn') %>
+  <% fld('hoc_vi', 'Học vị') %>
+  <% fld('chung_chi', 'Chứng chỉ') %>
+  <% fld('kinh_nghiem_nam', 'Số năm kinh nghiệm', 'number', 'min="0" max="60"') %>
+  <% fld('ngay_vao_lam', 'Ngày vào làm', 'date') %>
+  <div class="field full"><label for="gioi_thieu">Giới thiệu</label><textarea class="input" id="gioi_thieu" name="gioi_thieu" rows="4"><%= v.gioi_thieu || '' %></textarea></div>
+  <% if (typeof isNew !== 'undefined' && isNew) { %><% fld('mat_khau', 'Mật khẩu ban đầu', 'text', 'minlength="8" autocomplete="off"') %><% } %>
+</div>

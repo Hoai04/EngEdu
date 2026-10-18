@@ -1,0 +1,36 @@
+<%- include('head') %>
+<body>
+<div class="topbar">
+  <div class="container">
+    <span><b>Ưu đãi</b>Đăng ký trước 31/10 nhận giáo trình miễn phí</span>
+    <span><b>Khai giảng</b>Các lớp IELTS, TOEIC, Giao tiếp tháng 11</span>
+    <span><b>Hotline</b>0900 000 000</span>
+  </div>
+</div>
+<header class="navbar">
+  <div class="container">
+    <a class="logo" href="/"><span class="mark">E</span><span>Eng<span class="edu">Edu</span></span></a>
+    <nav class="nav-links">
+      <% const links = [['/', 'Trang chủ'], ['/khoa-hoc', 'Khóa học'], ['/giao-vien', 'Giáo viên'], ['/danh-gia', 'Đánh giá'], ['/gioi-thieu', 'Giới thiệu'], ['/tu-van', 'Tư vấn']]; %>
+      <% links.forEach(([href, text]) => { const on = href === '/' ? path === '/' : path.startsWith(href); %>
+        <a href="<%= href %>" class="<%= on ? 'active' : '' %>"><%= text %></a>
+      <% }) %>
+    </nav>
+    <form class="nav-search" action="/khoa-hoc" method="get">
+      <input name="q" placeholder="Tìm khóa học, giáo viên..." value="<%= path === '/khoa-hoc' ? (query.q || '') : '' %>" aria-label="Tìm kiếm">
+    </form>
+    <div class="nav-actions">
+      <% if (!currentUser) { %>
+        <a class="btn btn-outline btn-sm" href="/dang-nhap">Đăng nhập</a>
+        <a class="btn btn-sm" href="/dang-ky">Đăng ký</a>
+      <% } else if (currentUser.vai_tro === 'HOC_VIEN') { %>
+        <a href="/thong-bao" style="color:var(--text);font-weight:500">Thông báo <% if (unread) { %><span class="dot"><%= unread %></span><% } %></a>
+        <a class="user-chip" href="/tai-khoan/khoa-hoc"><span class="avatar"><%= h.initials(currentUser.ho_ten) %></span><%= currentUser.ho_ten %></a>
+      <% } else { %>
+        <a class="btn btn-sm" href="<%= currentUser.vai_tro === 'ADMIN' ? '/admin' : '/teacher' %>">Về trang <%= currentUser.vai_tro === 'ADMIN' ? 'quản trị' : 'giáo viên' %></a>
+      <% } %>
+    </div>
+  </div>
+</header>
+<main>
+<% if (flash) { %><div class="container" style="padding-top:16px"><%- include('flash') %></div><% } %>
