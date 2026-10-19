@@ -45,6 +45,11 @@
     <% } else { %>
       <form method="post" action="/admin/hoc-vien/<%= student.id %>/mo-khoa"><button class="btn btn-block">Mở khóa tài khoản</button></form>
     <% } %>
+    <form method="post" action="/admin/hoc-vien/<%= student.id %>/dat-lai-mat-khau" class="mt">
+      <h3>Đặt lại mật khẩu</h3>
+      <div class="field"><label for="mat_khau_moi">Mật khẩu mới</label><input class="input" id="mat_khau_moi" name="mat_khau_moi" minlength="8" required autocomplete="off"></div>
+      <button class="btn btn-outline btn-block">Đặt lại</button>
+    </form>
   </aside>
 </div>
 <%- include('../partials/staff-end') %>

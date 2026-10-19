@@ -46,6 +46,8 @@ Bấm **Ctrl + C** trong terminal để tắt máy chủ.
 
 Tất cả dùng chung trang `/dang-nhap`; hệ thống tự chuyển trang theo vai trò.
 
+**Quên mật khẩu:** ở trang đăng nhập bấm **Quên mật khẩu?**, nhập email + số điện thoại đã đăng ký. Nếu khớp, hệ thống cho đặt mật khẩu mới qua liên kết dùng một lần (hết hạn sau 15 phút), đồng thời đăng xuất mọi phiên cũ. Sai 5 lần sẽ bị tạm khóa 15 phút. Admin cũng có thể đặt lại mật khẩu cho học viên và giáo viên. Mật khẩu Admin chỉ đổi trong `config.local.js`.
+
 ### Xem dữ liệu trong CSDL
 Mở file `data/engedu.db` bằng [DB Browser for SQLite](https://sqlitebrowser.org) hoặc tiện ích **SQLite Viewer** trong VS Code.
 
@@ -119,7 +121,7 @@ Mở 2 cửa sổ terminal:
 npm run seed && npm start   # cửa sổ 1
 npm test                    # cửa sổ 2
 ```
-`scripts/test.js` chạy 91 kiểm tra trên 21 nhóm: đăng nhập, phân quyền, tải 66 trang của 4 vai trò, đăng ký tài khoản, đăng ký học – thanh toán, liên tác nhân, bảo vệ thông tin, từ chối – đăng ký lại, sĩ số, đánh giá, mở khóa học, quản lý giáo viên, Admin cố định, tư vấn, thông báo. Bộ kiểm thử tạo thêm dữ liệu, chạy lại `npm run seed` để làm sạch.
+`scripts/test.js` chạy 104 kiểm tra trên 22 nhóm: đăng nhập, quên mật khẩu, phân quyền, tải 66 trang của 4 vai trò, đăng ký tài khoản, đăng ký học – thanh toán, liên tác nhân, bảo vệ thông tin, từ chối – đăng ký lại, sĩ số, đánh giá, mở khóa học, quản lý giáo viên, Admin cố định, tư vấn, thông báo. Bộ kiểm thử tạo thêm dữ liệu, chạy lại `npm run seed` để làm sạch.
 
 ---
 

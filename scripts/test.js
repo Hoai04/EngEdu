@@ -374,6 +374,42 @@ async function main() {
   await newbie.post('/thong-bao/doc-tat-ca');
   check('Thông báo', 'Đánh dấu tất cả đã đọc', Number((await one('SELECT COUNT(*) AS n FROM thong_bao WHERE tai_khoan_id = ? AND da_doc = FALSE', [nb.id])).n) === 0);
 
+  // ------------------------------------------------------------ 15. Quên mật khẩu
+  console.log('\n15. Quên mật khẩu');
+  const forgot = new Client('forgot');
+  r = await forgot.get('/dang-nhap');
+  check('Quên mật khẩu', 'Trang đăng nhập có liên kết "Quên mật khẩu?"', r.text.includes('href="/quen-mat-khau"'));
+  r = await forgot.get('/quen-mat-khau');
+  check('Quên mật khẩu', 'Mở trang Quên mật khẩu', r.status === 200);
+  r = await forgot.post('/quen-mat-khau', { email: newEmail, sdt: '0000000000' });
+  check('Quên mật khẩu', 'Sai số điện thoại bị từ chối', r.status === 400 && r.text.includes('không khớp'));
+  r = await forgot.post('/quen-mat-khau', { email: 'admin@engedu.vn', sdt: '0900000000' });
+  check('Quên mật khẩu', 'Không đặt lại được mật khẩu Admin', r.status === 400);
+  r = await forgot.post('/quen-mat-khau', { email: newEmail.toUpperCase(), sdt: '0987654321' });
+  const resetUrl = r.location || '';
+  check('Quên mật khẩu', 'Email + SĐT đúng → chuyển đến trang đặt lại', /^\/dat-lai-mat-khau\/[0-9a-f]{48}$/.test(resetUrl), resetUrl);
+  r = await forgot.post(resetUrl, { mat_khau_moi: 'ngan', nhap_lai: 'ngan' });
+  check('Quên mật khẩu', 'Mật khẩu mới quá ngắn báo lỗi', r.status === 400);
+  const still = new Client('still');
+  await still.login(newEmail);
+  r = await forgot.post(resetUrl, { mat_khau_moi: 'MoiQuen123', nhap_lai: 'MoiQuen123' });
+  check('Quên mật khẩu', 'Đặt mật khẩu mới thành công', r.location === '/dang-nhap');
+  r = await new Client('oldpw').login(newEmail);
+  check('Quên mật khẩu', 'Mật khẩu cũ không còn dùng được', r.status === 400);
+  r = await new Client('newpw').login(newEmail, 'MoiQuen123');
+  check('Quên mật khẩu', 'Đăng nhập bằng mật khẩu mới', r.location && r.location !== '/dang-nhap');
+  r = await still.get('/tai-khoan');
+  check('Quên mật khẩu', 'Phiên đang mở ở thiết bị khác bị đăng xuất', r.location === '/dang-nhap');
+  r = await forgot.post(resetUrl, { mat_khau_moi: 'LanHai1234', nhap_lai: 'LanHai1234' });
+  check('Quên mật khẩu', 'Liên kết chỉ dùng được một lần', r.status === 400);
+  const brute = new Client('brute');
+  for (let i = 0; i < 5; i += 1) r = await brute.post('/quen-mat-khau', { email: 'an.le@example.com', sdt: `09000000${i}0` });
+  r = await brute.post('/quen-mat-khau', { email: 'an.le@example.com', sdt: '0933000001' });
+  check('Quên mật khẩu', 'Sai 5 lần → tạm khóa 15 phút', r.status === 400 && r.text.includes('15 phút'));
+  await admin.post(`/admin/hoc-vien/${nb.id}/dat-lai-mat-khau`, { mat_khau_moi: 'AdminDat123' });
+  r = await new Client('byadmin').login(newEmail, 'AdminDat123');
+  check('Quên mật khẩu', 'Admin đặt lại mật khẩu học viên', r.location && r.location !== '/dang-nhap');
+
   // ------------------------------------------------------------ Tổng kết
   const groups = {};
   for (const x of results) {

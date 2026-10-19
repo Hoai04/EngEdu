@@ -1,4 +1,5 @@
 // Đăng nhập chung cho 3 vai trò, tạm khóa khi sai nhiều lần, phân quyền theo vai trò.
+const crypto = require('crypto');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('./db');
@@ -7,24 +8,48 @@ const config = require('./config');
 const ROLE_HOME = { HOC_VIEN: '/', GIAO_VIEN: '/teacher', ADMIN: '/admin' };
 const homeFor = (role) => ROLE_HOME[role] || '/';
 
-// Bộ đếm đăng nhập sai theo email: { fails, lockedUntil }
-const loginAttempts = new Map();
+// Bộ đếm nhập sai theo email: { fails, lockedUntil }
+const loginAttempts = new Map(); // đăng nhập
+const resetAttempts = new Map(); // quên mật khẩu
 
-function lockInfo(email) {
-  const rec = loginAttempts.get(email);
+function lockInfo(email, map = loginAttempts) {
+  const rec = map.get(email);
   if (!rec || !rec.lockedUntil) return null;
   if (rec.lockedUntil > Date.now()) return rec;
-  loginAttempts.delete(email);
+  map.delete(email);
   return null;
 }
 
-function registerFail(email) {
-  const rec = loginAttempts.get(email) || { fails: 0, lockedUntil: 0 };
+function registerFail(email, map = loginAttempts) {
+  const rec = map.get(email) || { fails: 0, lockedUntil: 0 };
   rec.fails += 1;
   if (rec.fails >= config.security.maxLoginFails) {
     rec.lockedUntil = Date.now() + config.security.lockMinutes * 60 * 1000;
   }
-  loginAttempts.set(email, rec);
+  map.set(email, rec);
+}
+
+// Liên kết đặt lại mật khẩu dùng một lần: sha256(token) → { userId, expires }
+const RESET_MINUTES = 15;
+const resetTokens = new Map();
+const hashToken = (t) => crypto.createHash('sha256').update(String(t)).digest('hex');
+
+function issueResetToken(userId) {
+  const now = Date.now();
+  for (const [k, v] of resetTokens) if (v.expires < now || v.userId === userId) resetTokens.delete(k);
+  const token = crypto.randomBytes(24).toString('hex');
+  resetTokens.set(hashToken(token), { userId, expires: now + RESET_MINUTES * 60 * 1000 });
+  return token;
+}
+
+function readResetToken(token) {
+  const rec = resetTokens.get(hashToken(token));
+  if (!rec) return null;
+  if (rec.expires < Date.now()) {
+    resetTokens.delete(hashToken(token));
+    return null;
+  }
+  return rec;
 }
 
 /** Thông báo một lần (flash) lưu trong phiên. */
@@ -116,6 +141,62 @@ router.post('/dang-nhap', async (req, res) => {
     if (user.vai_tro !== 'HOC_VIEN' && returnTo && returnTo.startsWith(homeFor(user.vai_tro))) dest = returnTo;
     req.session.save(() => res.redirect(dest));
   });
+});
+
+// ---------- Quên mật khẩu: xác minh email + số điện thoại đã đăng ký → đặt mật khẩu mới
+const forgotView = (res, status, v, error) => res.status(status).render('client/forgot-password', { title: 'Quên mật khẩu', v, error });
+
+router.get('/quen-mat-khau', (req, res) => {
+  if (req.user) return res.redirect(homeFor(req.user.vai_tro));
+  forgotView(res, 200, { email: String(req.query.email || '') }, null);
+});
+
+router.post('/quen-mat-khau', async (req, res) => {
+  const email = String(req.body.email || '').trim().toLowerCase();
+  const sdt = String(req.body.sdt || '').replace(/\s+/g, '');
+  const v = { email, sdt };
+  if (!email || !sdt) return forgotView(res, 400, v, 'Vui lòng nhập email và số điện thoại đã đăng ký.');
+  if (lockInfo(email, resetAttempts)) {
+    return forgotView(res, 400, v, `Bạn đã nhập sai quá ${config.security.maxLoginFails} lần. Vui lòng thử lại sau ${config.security.lockMinutes} phút.`);
+  }
+  const user = await db.one('SELECT id, sdt, vai_tro, trang_thai FROM tai_khoan WHERE email = ?', [email]);
+  // Admin là tài khoản cố định: mật khẩu chỉ đổi trong config.local.js
+  if (!user || user.vai_tro === 'ADMIN' || !user.sdt || user.sdt !== sdt) {
+    registerFail(email, resetAttempts);
+    return forgotView(res, 400, v, 'Email hoặc số điện thoại không khớp với tài khoản nào.');
+  }
+  if (user.trang_thai === 'BI_KHOA') return forgotView(res, 400, v, 'Tài khoản đã bị khóa. Vui lòng liên hệ trung tâm.');
+  resetAttempts.delete(email);
+  res.redirect(`/dat-lai-mat-khau/${issueResetToken(user.id)}`);
+});
+
+router.get('/dat-lai-mat-khau/:token', async (req, res) => {
+  const rec = readResetToken(req.params.token);
+  if (!rec) return forgotView(res, 400, {}, `Liên kết đặt lại mật khẩu không hợp lệ hoặc đã quá ${RESET_MINUTES} phút. Vui lòng làm lại.`);
+  const user = await db.one('SELECT email FROM tai_khoan WHERE id = ?', [rec.userId]);
+  res.render('client/reset-password', { title: 'Đặt lại mật khẩu', token: req.params.token, email: user.email, errors: {} });
+});
+
+router.post('/dat-lai-mat-khau/:token', async (req, res) => {
+  const rec = readResetToken(req.params.token);
+  if (!rec) return forgotView(res, 400, {}, `Liên kết đặt lại mật khẩu không hợp lệ hoặc đã quá ${RESET_MINUTES} phút. Vui lòng làm lại.`);
+  const user = await db.one('SELECT id, email FROM tai_khoan WHERE id = ?', [rec.userId]);
+  const mk = String(req.body.mat_khau_moi || '');
+  const errors = {};
+  if (mk.length < 8) errors.mat_khau_moi = 'Mật khẩu mới tối thiểu 8 ký tự';
+  else if (mk !== req.body.nhap_lai) errors.nhap_lai = 'Hai mật khẩu không khớp';
+  if (Object.keys(errors).length) {
+    return res.status(400).render('client/reset-password', { title: 'Đặt lại mật khẩu', token: req.params.token, email: user.email, errors });
+  }
+  await db.transaction(async () => {
+    await db.query('UPDATE tai_khoan SET mat_khau = ? WHERE id = ?', [await bcrypt.hash(mk, 10), user.id]);
+    await db.notify(user.id, 'Mật khẩu đã được đặt lại', 'Bạn vừa đặt lại mật khẩu bằng chức năng Quên mật khẩu.');
+  });
+  resetTokens.delete(hashToken(req.params.token)); // liên kết chỉ dùng một lần
+  loginAttempts.delete(user.email);
+  await destroySessionsOf(user.id); // đăng xuất khỏi mọi thiết bị đang đăng nhập
+  flash(req, 'success', 'Đã đặt lại mật khẩu. Vui lòng đăng nhập bằng mật khẩu mới.');
+  res.redirect(`/dang-nhap`);
 });
 
 router.post('/dang-xuat', (req, res) => {

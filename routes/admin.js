@@ -574,6 +574,23 @@ router.get('/hoc-vien/:id', async (req, res) => {
   res.render('admin/student-detail', { title: student.ho_ten, student, enrollments, payments, reviews, tab });
 });
 
+router.post('/hoc-vien/:id/dat-lai-mat-khau', async (req, res) => {
+  const hv = await db.one("SELECT id FROM tai_khoan WHERE id = ? AND vai_tro = 'HOC_VIEN'", [req.params.id]);
+  if (!hv) return notFound(res);
+  const mk = String(req.body.mat_khau_moi || '');
+  if (mk.length < 8) {
+    flash(req, 'error', 'Mật khẩu mới tối thiểu 8 ký tự.');
+  } else {
+    await db.transaction(async (conn) => {
+      await db.query('UPDATE tai_khoan SET mat_khau = ? WHERE id = ?', [await bcrypt.hash(mk, 10), hv.id], conn);
+      await db.notify(hv.id, 'Mật khẩu đã được đặt lại', 'Admin đã đặt lại mật khẩu của bạn. Hãy đổi mật khẩu sau khi đăng nhập.', '/tai-khoan/mat-khau', conn);
+    });
+    await destroySessionsOf(hv.id);
+    flash(req, 'success', 'Đã đặt lại mật khẩu học viên.');
+  }
+  res.redirect(`/admin/hoc-vien/${hv.id}`);
+});
+
 mountNotifications(router, 'admin/notifications', '/admin');
 
 module.exports = router;
