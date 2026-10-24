@@ -17,8 +17,20 @@ function stopAll(code = 0) {
 process.on('SIGINT', () => stopAll(0));
 process.on('SIGTERM', () => stopAll(0));
 
+// 0. Lần đầu (thư mục vừa tải về): tự cài thư viện và tạo dữ liệu mẫu
+const fs = require('fs');
+const { execSync } = require('child_process');
+if (!fs.existsSync(path.join(ROOT, 'node_modules', 'express'))) {
+  console.log('Chưa có thư viện, đang chạy npm install (chỉ lần đầu)...');
+  execSync('npm install', { cwd: ROOT, stdio: 'inherit' });
+}
+if (!fs.existsSync(config.dbFile)) {
+  console.log('Chưa có CSDL, đang tạo dữ liệu mẫu (chỉ lần đầu)...');
+  execSync('npm run seed', { cwd: ROOT, stdio: 'inherit' });
+}
+
 // 1. Máy chủ web
-const web = spawn(process.execPath, ['--disable-warning=ExperimentalWarning', 'app.js'], { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
+const web =spawn(process.execPath, ['--disable-warning=ExperimentalWarning', 'app.js'], { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
 children.push(web);
 web.stdout.on('data', (d) => process.stdout.write(d));
 web.stderr.on('data', (d) => process.stderr.write(d));
