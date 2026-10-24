@@ -36,6 +36,15 @@ npm start        # mở http://localhost:3000
 
 Bấm **Ctrl + C** trong terminal để tắt máy chủ.
 
+### Mở web cho người khác truy cập (một lệnh)
+Cài Cloudflare Tunnel một lần: `winget install --id Cloudflare.cloudflared` (mở lại terminal sau khi cài). Sau đó chỉ cần:
+
+```bash
+npm run public
+```
+
+hoặc **bấm đúp file `chay-web.bat`** (Windows; lần đầu tự cài thư viện và tạo dữ liệu mẫu). Lệnh này chạy web và mở tunnel cùng lúc, rồi in ra link `https://...trycloudflare.com` để gửi cho mọi người. Giữ cửa sổ mở; bấm **Ctrl + C** để tắt. Mỗi lần chạy lại, link sẽ đổi.
+
 ### Tài khoản mẫu
 
 | Vai trò | Email | Mật khẩu |
